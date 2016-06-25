@@ -1,0 +1,13 @@
+# idea project files
+.idea/
+*.iml
+
+##Gradle-based build
+.gradle/
+gradle/
+build/
+*.gradle
+gradle.properties
+gradlew
+gradlew.bat
+local.properties

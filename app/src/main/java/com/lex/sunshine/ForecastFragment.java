@@ -4,16 +4,15 @@ import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,7 +24,45 @@ public class ForecastFragment extends Fragment {
 
     public static final String OPEN_WEATHER_URL = "http://api.openweathermap.org/data/2.5/forecast/daily?q=94043&units=metric&mode=json&cnt=7&APPID=350389f98777014acf1168ddbef077d3";
 
+    private static final String LOG_TAG = ForecastFragment.class.getSimpleName();
+
     public ForecastFragment() {
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState){
+        super.onCreate(savedInstanceState);
+        //It's necessary to allow Menu Handling. Setting it to true you can override the methods:
+        //   Fragment.onCreateOptionsMenu | Fragment.onOptionsItemSelected
+        // to handle menu interections
+        this.setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater){
+        menuInflater.inflate(R.menu.forecastfragment, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem menuItem){
+        int itemId = menuItem.getItemId();
+
+        if(itemId == R.id.action_refresh){
+            try {
+                URL url = new URL(ForecastFragment.OPEN_WEATHER_URL);
+
+                FetchWeatherTask fetchWeatherTask = new FetchWeatherTask();
+
+                fetchWeatherTask.execute(url);
+            }
+            catch (MalformedURLException e) {
+                Log.e(LOG_TAG, "Error ", e);
+            }
+
+            return true;
+        }
+
+        return super.onOptionsItemSelected(menuItem);
     }
 
     @Override

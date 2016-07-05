@@ -15,7 +15,7 @@ import java.net.URL;
  */
 public class FetchWeatherTask extends AsyncTask<URL, Void, String> {
 
-    private final String LOG_TAG = FetchWeatherTask.class.getSimpleName();
+    private static final String LOG_TAG = FetchWeatherTask.class.getSimpleName();
 
     @Override
     protected String doInBackground(URL... urls) {
@@ -60,6 +60,8 @@ public class FetchWeatherTask extends AsyncTask<URL, Void, String> {
             }
 
             forecastJsonStr = stringBuffer.toString();
+
+            Log.v(FetchWeatherTask.LOG_TAG, "Forecast JSON string: " + forecastJsonStr);
         }
         catch(IOException e){
             Log.e(LOG_TAG, "Error ", e);

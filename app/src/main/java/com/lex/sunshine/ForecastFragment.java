@@ -22,7 +22,7 @@ import java.util.Arrays;
  */
 public class ForecastFragment extends Fragment {
 
-    public static final String OPEN_WEATHER_URL = "http://api.openweathermap.org/data/2.5/forecast/daily?q=94043&units=metric&mode=json&cnt=7&APPID=350389f98777014acf1168ddbef077d3";
+
 
     private static final String LOG_TAG = ForecastFragment.class.getSimpleName();
 
@@ -48,16 +48,10 @@ public class ForecastFragment extends Fragment {
         int itemId = menuItem.getItemId();
 
         if(itemId == R.id.action_refresh){
-            try {
-                URL url = new URL(ForecastFragment.OPEN_WEATHER_URL);
-
                 FetchWeatherTask fetchWeatherTask = new FetchWeatherTask();
 
-                fetchWeatherTask.execute(url);
-            }
-            catch (MalformedURLException e) {
-                Log.e(LOG_TAG, "Error ", e);
-            }
+                //TODO Receive postal code from the user, instead of fixed as a hard code.
+                fetchWeatherTask.execute("94043");
 
             return true;
         }

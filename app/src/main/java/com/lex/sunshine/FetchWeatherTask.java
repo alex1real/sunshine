@@ -14,7 +14,7 @@ import java.net.URL;
 
 /**
  * Created by Alex on 04/07/2016.
- */
+ *                                    AsyncTask<Params, Progress, Result>*/
 public class FetchWeatherTask extends AsyncTask<String, Void, String> {
 
     private final String LOG_TAG = FetchWeatherTask.class.getSimpleName();

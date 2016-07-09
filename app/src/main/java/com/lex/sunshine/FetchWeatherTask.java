@@ -15,7 +15,7 @@ import java.net.URL;
 /**
  * Created by Alex on 04/07/2016.
  *                                    AsyncTask<Params, Progress, Result>*/
-public class FetchWeatherTask extends AsyncTask<String, Void, String> {
+public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
 
     private final String LOG_TAG = FetchWeatherTask.class.getSimpleName();
     private final String FORECAST_BASE_URL = "http://api.openweathermap.org/data/2.5/forecast/daily?";
@@ -27,11 +27,13 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String> {
 
 
     @Override
-    protected String doInBackground(String... postalCodes) {
+    protected String[] doInBackground(String... postalCodes) {
 
         String format = "json";
         String units = "metric";
         int numDays = 7;
+
+        String[] forecastList = null;
 
         if(postalCodes.length == 0){
             return null;
@@ -95,7 +97,8 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String> {
 
                 forecastJsonStr = stringBuffer.toString();
 
-                Log.v(this.LOG_TAG, "Forecast JSON string: " + forecastJsonStr);
+                forecastList = WeatherDataParser.getWeatherDataFromJson(forecastJsonStr, 7);
+
             }
             catch (MalformedURLException e){
                 Log.e(LOG_TAG, "Error ", e);
@@ -118,7 +121,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String> {
                 }
             }
 
-            return forecastJsonStr;
+            return forecastList;
 
         }
 

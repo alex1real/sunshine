@@ -20,21 +20,29 @@ import java.util.Arrays;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class ForecastFragment extends Fragment {
-
-
+public class ForecastFragment
+        extends Fragment
+        implements AsyncTaskDelegator<String[]>{
 
     private static final String LOG_TAG = ForecastFragment.class.getSimpleName();
 
+    private ArrayAdapter<String> forecastArrayAdapter;
+
+    /****************
+     * Constructors *
+     ***************/
     public ForecastFragment() {
     }
 
+    /******************
+     * Public Methods *
+     *****************/
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         //It's necessary to allow Menu Handling. Setting it to true you can override the methods:
         //   Fragment.onCreateOptionsMenu | Fragment.onOptionsItemSelected
-        // to handle menu interections
+        // to handle menu interactions
         this.setHasOptionsMenu(true);
     }
 
@@ -48,10 +56,10 @@ public class ForecastFragment extends Fragment {
         int itemId = menuItem.getItemId();
 
         if(itemId == R.id.action_refresh){
-                FetchWeatherTask fetchWeatherTask = new FetchWeatherTask();
+            FetchWeatherTask fetchWeatherTask = new FetchWeatherTask(this);
 
-                //TODO Receive postal code from the user, instead of fixed as a hard code.
-                fetchWeatherTask.execute("94043");
+            //TODO Receive postal code from the user, instead of fixed as a hard code.
+            fetchWeatherTask.execute("94043");
 
             return true;
         }
@@ -73,11 +81,10 @@ public class ForecastFragment extends Fragment {
 
         ArrayList<String> weekForecast = new ArrayList<String>(Arrays.asList(forecastArray));
 
-        ArrayAdapter<String> forecastArrayAdapter =
-                new ArrayAdapter<String>(this.getActivity(),
-                                         R.layout.list_item_forecast,
-                                         R.id.list_item_forecast_textview,
-                                         weekForecast);
+        this.forecastArrayAdapter = new ArrayAdapter<String>(this.getActivity(),
+                                                             R.layout.list_item_forecast,
+                                                             R.id.list_item_forecast_textview,
+                                                             weekForecast);
 
         View rootView = inflater.inflate(R.layout.fragment_forecast, container, false);
 
@@ -87,5 +94,19 @@ public class ForecastFragment extends Fragment {
         listViewForecast.setAdapter(forecastArrayAdapter);
 
         return rootView;
+    }
+
+
+    @Override
+    public void updateAsyncResult(String[] results) {
+        this.refreshForecastDisplay(results);
+    }
+
+    /*******************
+     * Private methods *
+     ******************/
+    private void refreshForecastDisplay(String[] forecastList){
+        this.forecastArrayAdapter.clear();
+        this.forecastArrayAdapter.addAll(forecastList);
     }
 }

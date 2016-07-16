@@ -25,6 +25,15 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
     private final String DAYS_PARAM = "cnt";
     private final String APPID_PARAM = "APPID";
 
+    private AsyncTaskDelegator asyncTaskDelegator;
+
+
+    public FetchWeatherTask(AsyncTaskDelegator asyncTaskDelegator){
+        super();
+
+        this.asyncTaskDelegator = asyncTaskDelegator;
+    }
+
 
     @Override
     protected String[] doInBackground(String... postalCodes) {
@@ -125,6 +134,14 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
 
         }
 
+    }
+
+    @Override
+    //void onPostExecute (Result result)
+    protected void onPostExecute(String[] results) {
+        super.onPostExecute(results);
+
+        asyncTaskDelegator.updateAsyncResult(results);
     }
 
 }

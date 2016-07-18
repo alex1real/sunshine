@@ -36,7 +36,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
 
 
     @Override
-    protected String[] doInBackground(String... postalCodes) {
+    protected String[] doInBackground(String... queries) {
 
         String format = "json";
         String units = "metric";
@@ -44,11 +44,11 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
 
         String[] forecastList = null;
 
-        if(postalCodes.length == 0){
+        if(queries.length == 0){
             return null;
         }
         else{
-            String postalCode = postalCodes[0];
+            String query = queries[0];
 
             //Getting the weather forecast from openweathermap.org
             HttpURLConnection httpURLConnection = null;
@@ -61,7 +61,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
                 Uri uri = Uri.parse(this.FORECAST_BASE_URL);
                 Uri.Builder uriBuilder = uri.buildUpon();
 
-                uriBuilder.appendQueryParameter(this.QUERY_PARAM, postalCode);
+                uriBuilder.appendQueryParameter(this.QUERY_PARAM, query);
                 uriBuilder.appendQueryParameter(this.FORMAT_PARAM, format);
                 uriBuilder.appendQueryParameter(this.UNITS_PARAM, units);
                 uriBuilder.appendQueryParameter(this.DAYS_PARAM, Integer.toString(numDays));

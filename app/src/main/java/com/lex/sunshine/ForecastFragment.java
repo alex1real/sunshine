@@ -59,7 +59,7 @@ public class ForecastFragment
             FetchWeatherTask fetchWeatherTask = new FetchWeatherTask(this);
 
             //TODO Receive postal code from the user, instead of fixed as a hard code.
-            fetchWeatherTask.execute("94043");
+            fetchWeatherTask.execute("dublin,ie");
 
             return true;
         }
@@ -71,13 +71,8 @@ public class ForecastFragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         String[] forecastArray = {
-                "Today - Sunny - 22/12",
-                "Tomorrow - Foggy - 18/10",
-                "Weds - Cloudy - 19/9",
-                "Thurs - Asteroids - 20/18",
-                "Fri - Heavy Rain - 12/7",
-                "Sat - HELP TRAPPED IN WEATHERSTATION - 9/5",
-                "Sun - Sunny - 23/14" };
+                "Go to menu and tap Refresh",
+                " - " };
 
         ArrayList<String> weekForecast = new ArrayList<String>(Arrays.asList(forecastArray));
 

@@ -9,8 +9,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -24,7 +28,7 @@ public class ForecastFragment
         extends Fragment
         implements AsyncTaskDelegator<String[]>{
 
-    private static final String LOG_TAG = ForecastFragment.class.getSimpleName();
+    private final String LOG_TAG = ForecastFragment.class.getSimpleName();
 
     private ArrayAdapter<String> forecastArrayAdapter;
 
@@ -87,6 +91,22 @@ public class ForecastFragment
         ListView listViewForecast = (ListView)rootView.findViewById(R.id.listview_forecast);
 
         listViewForecast.setAdapter(forecastArrayAdapter);
+
+        listViewForecast.setOnItemClickListener(
+                new AdapterView.OnItemClickListener(){
+                    @Override
+                    public void onItemClick(AdapterView<?> parent,
+                                            View view,
+                                            int position,
+                                            long id){
+                        ArrayAdapter<String> viewArrayAdapter = (ArrayAdapter<String>)parent.getAdapter();
+                        String forecastMsg = viewArrayAdapter.getItem(position);
+
+                        Toast toast = Toast.makeText(getActivity(), forecastMsg, Toast.LENGTH_SHORT);
+                        toast.show();
+                    }
+                }
+        );
 
         return rootView;
     }

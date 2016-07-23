@@ -1,5 +1,6 @@
 package com.lex.sunshine;
 
+import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
@@ -93,19 +94,22 @@ public class ForecastFragment
         listViewForecast.setAdapter(forecastArrayAdapter);
 
         listViewForecast.setOnItemClickListener(
-                new AdapterView.OnItemClickListener(){
-                    @Override
-                    public void onItemClick(AdapterView<?> parent,
-                                            View view,
-                                            int position,
-                                            long id){
-                        ArrayAdapter<String> viewArrayAdapter = (ArrayAdapter<String>)parent.getAdapter();
-                        String forecastMsg = viewArrayAdapter.getItem(position);
+            new AdapterView.OnItemClickListener(){
+                @Override
+                public void onItemClick(AdapterView<?> parent,
+                                        View view,
+                                        int position,
+                                        long id){
+                    //Retreiving the forecast String from the View's Adapter.
+                    ArrayAdapter<String> viewArrayAdapter = (ArrayAdapter<String>)parent.getAdapter();
+                    String forecastMsg = viewArrayAdapter.getItem(position);
 
-                        Toast toast = Toast.makeText(getActivity(), forecastMsg, Toast.LENGTH_SHORT);
-                        toast.show();
-                    }
+                    //Displaying the forecast in another activity
+                    Intent detailActivityIntent = new Intent(getActivity(), DetailActivity.class);
+                    detailActivityIntent.putExtra(Intent.EXTRA_TEXT, forecastMsg);
+                    startActivity(detailActivityIntent);
                 }
+            }
         );
 
         return rootView;

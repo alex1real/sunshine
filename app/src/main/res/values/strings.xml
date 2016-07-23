@@ -26,8 +26,8 @@
         <item>Fahrenheit</item>
     </string-array>
     <string-array name="pref_unit_list_values">
-        <item>C</item>
-        <item>F</item>
+        <item>metric</item>
+        <item>imperial</item>
     </string-array>
 
     <!-- Example settings for Data & Sync -->

@@ -25,6 +25,9 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
     private final String DAYS_PARAM = "cnt";
     private final String APPID_PARAM = "APPID";
 
+    private final String FORMAT = "json";
+    private final int NUM_DAYS = 7;
+
     private AsyncTaskDelegator asyncTaskDelegator;
 
 
@@ -36,19 +39,16 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
 
 
     @Override
-    protected String[] doInBackground(String... queries) {
-
-        String format = "json";
-        String units = "metric";
-        int numDays = 7;
+    protected String[] doInBackground(String... params) {
 
         String[] forecastList = null;
 
-        if(queries.length == 0){
+        if(params.length != 2){
             return null;
         }
         else{
-            String query = queries[0];
+            String location = params[0];
+            String units = params[1];
 
             //Getting the weather forecast from openweathermap.org
             HttpURLConnection httpURLConnection = null;
@@ -61,11 +61,10 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
                 Uri uri = Uri.parse(this.FORECAST_BASE_URL);
                 Uri.Builder uriBuilder = uri.buildUpon();
 
-                uriBuilder.appendQueryParameter(this.QUERY_PARAM, query);
-                uriBuilder.appendQueryParameter(this.FORMAT_PARAM, format);
+                uriBuilder.appendQueryParameter(this.QUERY_PARAM, location);
+                uriBuilder.appendQueryParameter(this.FORMAT_PARAM, this.FORMAT);
                 uriBuilder.appendQueryParameter(this.UNITS_PARAM, units);
-                uriBuilder.appendQueryParameter(this.DAYS_PARAM, Integer.toString(numDays));
-                //uriBuilder.appendQueryParameter(this.APPID_PARAM, "350389f98777014acf1168ddbef077d3");
+                uriBuilder.appendQueryParameter(this.DAYS_PARAM, Integer.toString(this.NUM_DAYS));
                 uriBuilder.appendQueryParameter(this.APPID_PARAM, BuildConfig.OPEN_WEATHER_MAP_API_KEY);
 
                 uri = uriBuilder.build();
@@ -106,7 +105,8 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
 
                 forecastJsonStr = stringBuffer.toString();
 
-                forecastList = WeatherDataParser.getWeatherDataFromJson(forecastJsonStr, 7);
+                WeatherDataParser weatherDataParser = new WeatherDataParser(units);
+                forecastList = weatherDataParser.getWeatherDataFromJson(forecastJsonStr, 7);
 
             }
             catch (MalformedURLException e){

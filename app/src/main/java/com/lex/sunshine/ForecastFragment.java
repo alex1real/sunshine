@@ -71,8 +71,9 @@ public class ForecastFragment
 
             SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
             String location = sharedPref.getString(getString(R.string.pref_location_key), defaultLocation);
+            String unit = sharedPref.getString(getString(R.string.pref_temperature_unit_key), "");
 
-            fetchWeatherTask.execute(location);
+            fetchWeatherTask.execute(location, unit);
 
             return true;
         }

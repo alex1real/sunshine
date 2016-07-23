@@ -1,5 +1,8 @@
 package com.lex.sunshine;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import org.json.JSONArray;
@@ -14,40 +17,27 @@ import java.util.Date;
  */
 public class WeatherDataParser {
 
-    private static final String LOG_TAG = WeatherDataParser.class.getSimpleName();
+    private final String LOG_TAG = WeatherDataParser.class.getSimpleName();
+    private final String units;
+
+    /***************
+     * Constructor *
+     **************/
+    /*
+     * Unit: (metric/Imperial)
+     */
+    public WeatherDataParser(String units){
+        this.units = units;
+    }
 
     /******************
      * Public Methods *
      *****************/
-    /* Given a string of the form returned by the api call:
-     * http://api.openweathermap.org/data/2.5/forecast/daily?q=94043&mode=json&units=metric&cnt=7
-     * retrieve the maximum temperature for the day indicated by dayIndex */
-    public static double getMaxTemperatureForDay(String forecastJsonStr, int dayIndex){
-
-        double maxTemperature = 0;
-
-        try {
-            JSONObject jsonObject = new JSONObject(forecastJsonStr);
-            String cod = jsonObject.getString("cod");
-            JSONArray forecastList = jsonObject.getJSONArray("list");
-
-            JSONObject forecast = forecastList.getJSONObject(dayIndex);
-            JSONObject temperature = forecast.getJSONObject("temp");
-            maxTemperature = temperature.getDouble("max");
-
-        }
-        catch(JSONException e){
-            Log.e(LOG_TAG, "Error ", e);
-        }
-
-        return maxTemperature;
-    }
-
     /**********************************************************************************************
      * Take the String representing the complete forecast in JSON Format and pull out the data we *
      * need to construct the Strings needed for the wireframes.                                   *
      *********************************************************************************************/
-    public static String[] getWeatherDataFromJson(String forecastJsonStr, int numDays){
+    public String[] getWeatherDataFromJson(String forecastJsonStr, int numDays){
 
         String[] forecastList = null;
 
@@ -95,12 +85,12 @@ public class WeatherDataParser {
     /*******************
      * Private Methods *
      ******************/
-    /*
-     * Format the forecast String to this pattern: "Mon, Jun 1 - Clear - 18/13"
-     */
-    private static String formatForecastString(long dateUnixFormat,
-                                               double minTemperture,
-                                               double maxTemperture,
+    /****************************************************************************
+     * Format the forecast String to this pattern: "Mon, Jun 1 - Clear - 18/13" *
+     ***************************************************************************/
+    private String formatForecastString(long dateUnixFormat,
+                                               double minTemperature,
+                                               double maxTemperature,
                                                String weatherDesc){
 
         String forecast = null;
@@ -109,15 +99,15 @@ public class WeatherDataParser {
 
         forecast = String.format("%s - %s - %.0f/%.0f", formattedDate,
                                                         weatherDesc,
-                                                        maxTemperture,
-                                                        minTemperture);
+                                                        maxTemperature,
+                                                        minTemperature);
 
         return forecast;
     }
 
     /* The date/time conversion code is going to be moved outside the AsyncTask later,
      * so for convenience we're breaking it out into its own method now. */
-    private static String getReadableDateString(long time){
+    private String getReadableDateString(long time){
         Date date = new Date(time * 1000);
 
         SimpleDateFormat sdf = new SimpleDateFormat("EEE, MMM dd");

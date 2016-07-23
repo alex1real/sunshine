@@ -1,6 +1,9 @@
 package com.lex.sunshine;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.util.Log;
@@ -63,8 +66,13 @@ public class ForecastFragment
         if(itemId == R.id.action_refresh){
             FetchWeatherTask fetchWeatherTask = new FetchWeatherTask(this);
 
-            //TODO Receive postal code from the user, instead of fixed as a hard code.
-            fetchWeatherTask.execute("dublin,ie");
+            //Retrieving the location from a SharedPreference
+            String defaultLocation = getString(R.string.pref_default_location);
+
+            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            String location = sharedPref.getString(getString(R.string.pref_location_key), defaultLocation);
+
+            fetchWeatherTask.execute(location);
 
             return true;
         }

@@ -15,9 +15,11 @@
         based on your message history
     </string>
 
+    <string name="pref_location_key">location</string>
     <string name="pref_location_label">Location</string>
     <string name="pref_default_location">dublin,ie</string>
 
+    <string name="pref_temperature_unit_key">temperature_unit</string>
     <string name="pref_temperature_unit_label">Pick your units</string>
     <string-array name="pref_unit_list_titles">
         <item>Celsius</item>

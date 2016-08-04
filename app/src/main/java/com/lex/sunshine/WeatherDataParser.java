@@ -97,7 +97,7 @@ public class WeatherDataParser {
 
         String formattedDate = getReadableDateString(dateUnixFormat);
 
-        forecast = String.format("%s - %s - %.0f/%.0f", formattedDate,
+        forecast = String.format("%s - %s - Max %.0f / Min %.0f", formattedDate,
                                                         weatherDesc,
                                                         maxTemperature,
                                                         minTemperature);

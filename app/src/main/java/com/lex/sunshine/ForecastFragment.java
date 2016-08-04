@@ -35,6 +35,7 @@ public class ForecastFragment
     private final String LOG_TAG = ForecastFragment.class.getSimpleName();
 
     private ArrayAdapter<String> forecastArrayAdapter;
+    private String defaultLocation;
 
     /****************
      * Constructors *
@@ -52,6 +53,8 @@ public class ForecastFragment
         //   Fragment.onCreateOptionsMenu | Fragment.onOptionsItemSelected
         // to handle menu interactions
         this.setHasOptionsMenu(true);
+
+        this.defaultLocation = getString(R.string.pref_default_location);
     }
 
     @Override
@@ -64,16 +67,7 @@ public class ForecastFragment
         int itemId = menuItem.getItemId();
 
         if(itemId == R.id.action_refresh){
-            FetchWeatherTask fetchWeatherTask = new FetchWeatherTask(this);
-
-            //Retrieving the location from a SharedPreference
-            String defaultLocation = getString(R.string.pref_default_location);
-
-            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
-            String location = sharedPref.getString(getString(R.string.pref_location_key), defaultLocation);
-            String unit = sharedPref.getString(getString(R.string.pref_temperature_unit_key), "");
-
-            fetchWeatherTask.execute(location, unit);
+            this.getWeatherForecast();
 
             return true;
         }
@@ -84,9 +78,8 @@ public class ForecastFragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        String[] forecastArray = {
-                "Go to menu and tap Refresh",
-                " - " };
+        //Remove fake data
+        String[] forecastArray = new String[0];
 
         ArrayList<String> weekForecast = new ArrayList<String>(Arrays.asList(forecastArray));
 
@@ -124,6 +117,13 @@ public class ForecastFragment
         return rootView;
     }
 
+    @Override
+    public void onStart(){
+        super.onStart();
+
+        this.getWeatherForecast();
+    }
+
 
     @Override
     public void updateAsyncResult(String[] results) {
@@ -133,6 +133,17 @@ public class ForecastFragment
     /*******************
      * Private methods *
      ******************/
+    private void getWeatherForecast(){
+        FetchWeatherTask fetchWeatherTask = new FetchWeatherTask(this);
+
+        //Retrieving the location from a SharedPreference
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String location = sharedPref.getString(getString(R.string.pref_location_key), defaultLocation);
+        String unit = sharedPref.getString(getString(R.string.pref_temperature_unit_key), "");
+
+        fetchWeatherTask.execute(location, unit);
+    }
+
     private void refreshForecastDisplay(String[] forecastList){
         this.forecastArrayAdapter.clear();
         this.forecastArrayAdapter.addAll(forecastList);

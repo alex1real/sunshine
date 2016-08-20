@@ -1,8 +1,10 @@
 package com.lex.sunshine;
 
+import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.test.AndroidTestCase;
+import android.util.Log;
 
 import com.lex.sunshine.db.WeatherContract;
 import com.lex.sunshine.db.WeatherDbHelper;
@@ -13,6 +15,9 @@ import java.util.HashSet;
  * Created by Alex on 14/08/2016.
  */
 public class TestDb extends AndroidTestCase {
+
+    private final String LOG_TAG = TestDb.class.getSimpleName();
+
 
     /*
      * Public Methods
@@ -71,6 +76,40 @@ public class TestDb extends AndroidTestCase {
         assertTrue("Error: The database doesn't contain all of the required entry columns",
                 locationColumnHashSet.isEmpty());
 
+        sqLiteDatabase.close();
+    }
+
+    public void testInsertLocation(){
+        SQLiteDatabase sqLiteDatabase = new WeatherDbHelper(mContext).getWritableDatabase();
+        assertTrue("Error: Database was not open", sqLiteDatabase.isOpen());
+
+        long rowId = TestUtilities.insertNorthPoleLocationValues(mContext);
+        assertTrue("Error: The row was not inserted properly in the Location Table", rowId != -1);
+
+        Cursor cursor = sqLiteDatabase.rawQuery("SELECT * FROM " + WeatherContract.LocationEntry.TABLE_NAME, null);
+        TestUtilities.validateCursor("TestDb", cursor, TestUtilities.createNorthPoleLocationValues());
+
+        cursor.close();
+        sqLiteDatabase.close();
+    }
+
+    public void testInsertWeather(){
+        SQLiteDatabase sqLiteDatabase = new WeatherDbHelper(mContext).getWritableDatabase();
+        assertTrue("Error: Database was not open", sqLiteDatabase.isOpen());
+
+        long locationId = TestUtilities.insertBelfastLocationValues(mContext);
+
+        Cursor cursor = sqLiteDatabase.rawQuery("SELECT * FROM " + WeatherContract.LocationEntry.TABLE_NAME, null);
+        TestUtilities.validateCursor("TesteDb", cursor, TestUtilities.createBelfastLocationValues());
+
+        cursor.close();
+
+        long weatherId = TestUtilities.insertWeatherValues(mContext, locationId);
+
+        cursor = sqLiteDatabase.rawQuery("SELECT * FROM " + WeatherContract.WeatherEntry.TABLE_NAME, null);
+        TestUtilities.validateCursor("TesteDb", cursor, TestUtilities.createWeatherValues(locationId));
+
+        cursor.close();
         sqLiteDatabase.close();
     }
 

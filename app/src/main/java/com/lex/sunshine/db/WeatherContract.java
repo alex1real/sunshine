@@ -5,6 +5,12 @@ import android.content.ContentUris;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
+import java.sql.Time;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.TimeZone;
+
 /**
  * Defines tables and columns for the weather database
  * Created by Alex on 13/08/2016.
@@ -28,7 +34,26 @@ public class WeatherContract {
     public static final String PATH_WEATHER = "weather";
     public static final String PATH_LOCATION = "location";
 
+    /*
+     * Public Methods
+     */
+    // To make it easy to query for the exact date, we normalize all dates  that go into the
+    // database to the start of the Julian day at UTC.
+    public static long normalizeDate(long startDate){
+        //normalize the start date to the beginning of the (UTC) day
+        Calendar gc = GregorianCalendar.getInstance(TimeZone.getTimeZone("UTC"));
+        gc.setTime(new Date(startDate));
+        gc.set(Calendar.HOUR_OF_DAY, 0);
+        gc.set(Calendar.MINUTE, 0);
+        gc.set(Calendar.SECOND, 0);
+        gc.set(Calendar.MILLISECOND, 0);
 
+        return gc.getTimeInMillis();
+    }
+
+    /*
+     * Inner Classes
+     */
     //Inner class that defines table contents of the location table
     public static final class LocationEntry implements BaseColumns{
 
@@ -131,6 +156,38 @@ public class WeatherContract {
 
         public static Uri buildWeatherLocation(String location){
             return CONTENT_URI.buildUpon().appendPath(location).build();
+        }
+
+        public static Uri buildWeatherLocationWithDate(String locationSettings,
+                                                       long startDate){
+            long normalizedDate = normalizeDate(startDate);
+
+            return CONTENT_URI.buildUpon().appendPath(locationSettings)
+                    .appendPath(Long.toString(normalizedDate)).build();
+        }
+
+        public static Uri buildWeatherLocationWithStartDate(String locationSettings,
+                                                            long startDate){
+            long normalizedDate = normalizeDate(startDate);
+
+            return CONTENT_URI.buildUpon().appendPath(locationSettings)
+                    .appendQueryParameter(COLUMN_DATE, Long.toString(normalizedDate)).build();
+        }
+
+        public static long gateDateFromUri(Uri uri){
+            return Long.parseLong(uri.getPathSegments().get(2));
+        }
+
+        public static String getLocationSettingsFromUri(Uri uri){
+            return uri.getPathSegments().get(1);
+        }
+
+        public static long getStartDateFromUri(Uri uri){
+            String dateString = uri.getQueryParameter(COLUMN_DATE);
+            if(null != dateString && dateString.length() > 0)
+                return Long.parseLong(dateString);
+            else
+                return 0;
         }
 
     }

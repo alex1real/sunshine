@@ -1,5 +1,6 @@
 package com.lex.sunshine.db;
 
+import android.net.Uri;
 import android.provider.BaseColumns;
 
 /**
@@ -8,8 +9,29 @@ import android.provider.BaseColumns;
  */
 public class WeatherContract {
 
+    // The "Content Authority" is a name for the entire content provider, similar to the
+    // relationship between a domain name and its website. A convenient string to use for the
+    // content authority is the package name for the app, which is guaranteed to be unique on the
+    // device.
+    public static final String CONTENT_AUTHORITY = "com.lex.sunshine.app";
+
+    // Use CONTENT_AUTHORITY to create a base of all URI's which apps will use to contact the
+    // content provider.
+    public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
+
+    // Possible paths (appended to base content URI for possible URI's)
+    // For instance, content://com.lex.sunshine.app/weather/ is a valid path for looking at weather
+    // data. content://com.lex.sunshine/app/givemeroot will fail as the Content Provider hasn't
+    // been given any information on what to do with "givemeroot"
+    public static final String PATH_WEATHER = "weather";
+    public static final String PATH_LOCATION = "location";
+
+
     //Inner class that defines table contents of the location table
     public static final class LocationEntry implements BaseColumns{
+
+        public static final Uri CONTENT_URI =
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_LOCATION).build();
 
         public static final String TABLE_NAME = "location";
 
@@ -28,6 +50,9 @@ public class WeatherContract {
 
     // Inner class that defines table contents of the weather table
     public static final class WeatherEntry implements BaseColumns {
+
+        public static final Uri CONTENT_URI =
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_WEATHER).build();
 
         public static final String TABLE_NAME = "weather";
 
@@ -59,6 +84,10 @@ public class WeatherContract {
 
         //Degrees are meteorological degrees (e.g, 0 is north, 180 is south). Stored as floats.
         public static final String COLUMN_DEGREES = "degrees";
+
+        public static Uri buildWeatherLocation(String location){
+            return CONTENT_URI.buildUpon().appendPath(location).build();
+        }
 
     }
 

@@ -1,5 +1,7 @@
 package com.lex.sunshine.db;
 
+import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
@@ -30,9 +32,23 @@ public class WeatherContract {
     //Inner class that defines table contents of the location table
     public static final class LocationEntry implements BaseColumns{
 
+        /*
+         * Uri Constants
+         */
         public static final Uri CONTENT_URI =
                 BASE_CONTENT_URI.buildUpon().appendPath(PATH_LOCATION).build();
 
+        public static final String CONTENT_TYPE =
+                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/"
+                + PATH_LOCATION;
+
+        public static final String CONTENT_ITEM_TYPE =
+                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/"
+                + PATH_LOCATION;
+
+        /*
+         * Table Constants
+         */
         public static final String TABLE_NAME = "location";
 
         //The location settings string that will be sent to openWeatherMap
@@ -46,14 +62,35 @@ public class WeatherContract {
         public static final String COLUMN_COORD_LAT = "coord_lat";
         public static final String COLUMN_COORD_LONG = "coord_long";
 
+        /*
+         * Public Methods
+         */
+        public static Uri buildLocationUri(long id){
+            return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
+
     }
 
     // Inner class that defines table contents of the weather table
     public static final class WeatherEntry implements BaseColumns {
 
+        /*
+         * Uri Constants
+         */
         public static final Uri CONTENT_URI =
                 BASE_CONTENT_URI.buildUpon().appendPath(PATH_WEATHER).build();
 
+        public static final String CONTENT_TYPE =
+                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/"
+                + PATH_WEATHER;
+
+        public static final String CONTENT_ITEM_TYPE =
+                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/"
+                + PATH_WEATHER;
+
+        /*
+         * Table Constants
+         */
         public static final String TABLE_NAME = "weather";
 
         //Column with the fk into the location table.
@@ -69,7 +106,7 @@ public class WeatherContract {
         // e. g. "clear" vs "sky is clear"
         public static final String COLUMN_SHORT_DESC = "short_desc";
 
-        //Min and Max tempertures for the day (stored as floats)
+        //Min and Max temperatures for the day (stored as floats)
         public static final String COLUMN_MIN_TEMP = "min";
         public static final String COLUMN_MAX_TEMP = "max";
 
@@ -84,6 +121,13 @@ public class WeatherContract {
 
         //Degrees are meteorological degrees (e.g, 0 is north, 180 is south). Stored as floats.
         public static final String COLUMN_DEGREES = "degrees";
+
+        /*
+         * Public Methods
+         */
+        public static Uri buildWeatherUri(long id){
+            return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
 
         public static Uri buildWeatherLocation(String location){
             return CONTENT_URI.buildUpon().appendPath(location).build();

@@ -11,6 +11,48 @@ import com.lex.sunshine.db.WeatherContract;
  * Created by Alex on 28/08/2016.
  */
 public class TestProvider extends AndroidTestCase {
+
+    public void testGetType(){
+        String testLocation = "London, UK";
+        long testDate = 1419120000L;// December 21st, 2014
+
+        // content://com.lex.sunshine.app/weather/
+        String type = mContext.getContentResolver().getType(WeatherContract.WeatherEntry.CONTENT_URI);
+
+        // vnd.android.cursor.dir/com.lex.sunshine.app/weather
+        assertEquals("Error: The WeatherEntry CONTENT_URI should return WeatherEntry.CONTENT_TYPE",
+                WeatherContract.WeatherEntry.CONTENT_TYPE, type);
+
+
+        // content://com.lex.sunshine.app/weather/London, UK
+        type = mContext.getContentResolver()
+                .getType(WeatherContract.WeatherEntry.buildWeatherLocation(testLocation));
+
+        // vnd.android.cursor.dir/com.lex.sunshine.app/weather
+        assertEquals("Error: The WeatherEntry CONTENT_URI with location should return return " +
+                "WeatherEntry.CONTENT_TYPE",
+                WeatherContract.WeatherEntry.CONTENT_TYPE, type);
+
+
+        // content://com.lex.sunshine.app/weather/94074/20140612
+        type = mContext.getContentResolver()
+                .getType(WeatherContract.WeatherEntry.buildWeatherLocationWithDate(testLocation,
+                        testDate));
+
+        // vnd.android.cursor.item/com.lex.sunshine.app/weather/1419120000
+        assertEquals("Error: The WeatherEntry CONTENT_URI with location and date should return" +
+                "WeatherEntry.CONTENT_ITEM_TYPE",
+                WeatherContract.WeatherEntry.CONTENT_ITEM_TYPE, type);
+
+
+        // content://com.lex.sunshine.app/location
+        type = mContext.getContentResolver().getType(WeatherContract.LocationEntry.CONTENT_URI);
+
+        //vnd.android.cursor.dir/com.lex.sunshine.app/location
+        assertEquals("Error: The LocationEntry CONTENT_URI should return LocationEntry.CONTENT_TYPE",
+                WeatherContract.LocationEntry.CONTENT_TYPE, type);
+    }
+
     // This test checks to make sure that the content provider is registered correctly.
     public void testProviderRegistry(){
         PackageManager pm = mContext.getPackageManager();

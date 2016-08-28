@@ -92,7 +92,22 @@ public class WeatherProvider extends ContentProvider {
     //TODO: Implement getType(Uri uri)
     @Override
     public String getType(Uri uri){
-        return null;
+        //Use the Uri Matcher to determine what kind of URI this is.
+        final int match = uriMatcher.match(uri);
+
+        switch (match){
+            case LOCATION:
+                return WeatherContract.LocationEntry.CONTENT_TYPE;
+            case WEATHER:
+                return WeatherContract.WeatherEntry.CONTENT_TYPE;
+            case WEATHER_WITH_LOCATION:
+                return WeatherContract.WeatherEntry.CONTENT_TYPE;
+            case WEATHER_WITH_LOCATION_AND_DATE:
+                return WeatherContract.WeatherEntry.CONTENT_ITEM_TYPE;
+            default:
+                throw new UnsupportedOperationException("Unknown URI: " + uri);
+        }
+
     }
 
     //TODO: Implement insert(Uri uri, ContentValues values)
@@ -148,8 +163,7 @@ public class WeatherProvider extends ContentProvider {
         // WeatherContract to help define  the types to the UriMatcher.
         // UriMatcher.addUri(authority, path, code)
         uriMatcher.addURI(WeatherContract.CONTENT_AUTHORITY,
-                //WeatherContract.PATH_WEATHER + "/#", //My Version
-                WeatherContract.PATH_WEATHER, //Udacity Version - It doesn't match with WeatherContract.WeatherEntry.buildWeatherUri(long id)
+                WeatherContract.PATH_WEATHER,
                 WEATHER);
         uriMatcher.addURI(WeatherContract.CONTENT_AUTHORITY,
                 WeatherContract.PATH_WEATHER + "/*",
@@ -158,8 +172,7 @@ public class WeatherProvider extends ContentProvider {
                 WeatherContract.PATH_WEATHER + "/*/#",
                 WEATHER_WITH_LOCATION_AND_DATE);
         uriMatcher.addURI(WeatherContract.CONTENT_AUTHORITY,
-                //WeatherContract.PATH_LOCATION + "/#", //My Version
-                WeatherContract.PATH_LOCATION, //Udacity Version - It doesn't match with WeatherContract.LocationEntry.buildLocationUri(long id)
+                WeatherContract.PATH_LOCATION,
                 LOCATION);
 
         // 3) Return the new matcher!

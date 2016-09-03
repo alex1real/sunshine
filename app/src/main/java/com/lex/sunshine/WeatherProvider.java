@@ -43,6 +43,7 @@ public class WeatherProvider extends ContentProvider {
                 + " = " + WeatherContract.LocationEntry.TABLE_NAME + "."
                 + WeatherContract.WeatherEntry._ID
         );
+
     }
 
     /*
@@ -89,7 +90,6 @@ public class WeatherProvider extends ContentProvider {
         return true;
     }
 
-    //TODO: Implement getType(Uri uri)
     @Override
     public String getType(Uri uri){
         //Use the Uri Matcher to determine what kind of URI this is.
@@ -110,20 +110,64 @@ public class WeatherProvider extends ContentProvider {
 
     }
 
-    //TODO: Implement insert(Uri uri, ContentValues values)
+    //ToDo: Implement insert(Uri uri, ContentValues values)
     @Override
     public Uri insert(Uri uri, ContentValues contentValues){
         return null;
     }
 
-    //TODO: Implement query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder)
+    //ToDo: Implement query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder)
     @Override
     public Cursor query(Uri uri,
                         String[] projection,
                         String selection,
                         String[] selectionArgs,
-                        String sortOder){
-        return null;
+                        String sortOrder){
+        // Here is the switch statement that, given a URI, will determine what kind of request is,
+        // and query the database accordingly.
+        Cursor retCursor;
+
+        switch(uriMatcher.match(uri)){
+            //weather
+            case WEATHER:
+                retCursor = weatherDbHelper.getReadableDatabase().query(
+                        WeatherContract.WeatherEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+
+            case WEATHER_WITH_LOCATION:
+                retCursor = getWeatherByLocationSettings(uri, projection, sortOrder);
+                break;
+
+            case WEATHER_WITH_LOCATION_AND_DATE:
+                retCursor = getWeatherByLocationSettingsAndDate(uri, projection, sortOrder);
+                break;
+
+            case LOCATION:
+                retCursor = weatherDbHelper.getReadableDatabase().query(
+                        WeatherContract.LocationEntry.TABLE_NAME,
+                        projection,
+                        selection,
+                        selectionArgs,
+                        null,
+                        null,
+                        sortOrder
+                );
+                break;
+
+            default:
+                throw new UnsupportedOperationException("Uknown uri: " + uri);
+        }
+
+        retCursor.setNotificationUri(getContext().getContentResolver(), uri);
+
+        return retCursor;
     }
 
     // You don't need to call this method. This is a method specifically to assist the testing

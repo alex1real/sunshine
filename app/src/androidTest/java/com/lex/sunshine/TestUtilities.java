@@ -136,9 +136,10 @@ public class TestUtilities extends AndroidTestCase {
             assertFalse("Column '" + columnName + "' not found" + error, index == -1);
 
             String expectedValue = entry.getValue().toString();
+            String cursorValue = valueCursor.getString(index);
             assertEquals("Value '" + entry.getValue().toString()
                             + "' didn't match the expected value '" + expectedValue + "'." + error,
-                    expectedValue, valueCursor.getString(index));
+                    expectedValue, cursorValue);
         }
 
     }

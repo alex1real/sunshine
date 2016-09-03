@@ -1,16 +1,49 @@
 package com.lex.sunshine;
 
 import android.content.ComponentName;
+import android.content.ContentValues;
 import android.content.pm.PackageManager;
 import android.content.pm.ProviderInfo;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.test.AndroidTestCase;
 
 import com.lex.sunshine.db.WeatherContract;
+import com.lex.sunshine.db.WeatherDbHelper;
 
 /**
  * Created by Alex on 28/08/2016.
  */
 public class TestProvider extends AndroidTestCase {
+
+    public void testBasicWeatherQuery(){
+        // Insert the test record directly into the database
+        WeatherDbHelper weatherDbHelper = new WeatherDbHelper(mContext);
+        SQLiteDatabase sqLiteDatabase = weatherDbHelper.getWritableDatabase();
+
+        ContentValues locationValues = TestUtilities.createNorthPoleLocationValues();
+        long locationRowId = TestUtilities.insertNorthPoleLocationValues(mContext);
+
+        ContentValues weatherValues = TestUtilities.createWeatherValues(locationRowId);
+
+        long weatherRowId = sqLiteDatabase.insert(WeatherContract.WeatherEntry.TABLE_NAME,
+                null,
+                weatherValues);
+        assertTrue("Unable to Insert WeatherEntry into the database", weatherRowId != -1);
+
+        sqLiteDatabase.close();
+
+        // Test the basic content provider Query
+        Cursor weatherCursor = mContext.getContentResolver().query(
+                WeatherContract.WeatherEntry.CONTENT_URI,
+                null,
+                null,
+                null,
+                null);
+
+        // Make sure we get the currect cursor out of the database
+        TestUtilities.validateCursor("testBasicWeatherQuery", weatherCursor, weatherValues);
+    }
 
     public void testGetType(){
         String testLocation = "London, UK";

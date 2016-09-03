@@ -78,7 +78,7 @@ public class TestDb extends AndroidTestCase {
 
         sqLiteDatabase.close();
     }
-
+/*
     public void testInsertLocation(){
         SQLiteDatabase sqLiteDatabase = new WeatherDbHelper(mContext).getWritableDatabase();
         assertTrue("Error: Database was not open", sqLiteDatabase.isOpen());
@@ -112,7 +112,7 @@ public class TestDb extends AndroidTestCase {
         cursor.close();
         sqLiteDatabase.close();
     }
-
+*/
     /*
      * Private Methods
      */

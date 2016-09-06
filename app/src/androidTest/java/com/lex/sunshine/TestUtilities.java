@@ -23,8 +23,8 @@ import java.util.Set;
  */
 public class TestUtilities extends AndroidTestCase {
 
-    private static final String TEST_LOCATION = "North Pole,us";
-    private static final long TEST_DATE = 1419033600L; //December 20th, 2014
+    public static final String TEST_LOCATION = "North Pole,us";
+    public static final long TEST_DATE = 1419033600L; //December 20th, 2014
 
     /*
      * Public Methods
@@ -118,7 +118,7 @@ public class TestUtilities extends AndroidTestCase {
     }
 
     public static void validateCursor(String error, Cursor valueCursor, ContentValues expectedValues){
-        assertTrue("Emtpy cursor returned. " + error, valueCursor.moveToFirst());
+        assertTrue("Empty cursor returned. " + error, valueCursor.moveToFirst());
         validateCurrentRecord(error, valueCursor, expectedValues);
         valueCursor.close();
     }
@@ -144,4 +144,56 @@ public class TestUtilities extends AndroidTestCase {
 
     }
 
+    /*
+     The functions provided inside of TestProvider use this utility class to test the ContentObserver
+     callbacks using the Polling Check class the we grabbed from the Android CTS tests.
+
+     Note  that this only tests that onChange function is called; it doesn't test that the correct
+     Uri is returned.
+     */
+    static class TestContentObserver extends ContentObserver {
+        final HandlerThread ht;
+        boolean contentChangedFlag;
+
+        private TestContentObserver(HandlerThread ht){
+            super(new Handler(ht.getLooper()));
+
+            this.ht = ht;
+        }
+
+        static TestContentObserver getTestContentObserver(){
+            HandlerThread ht = new HandlerThread("ContentObserverThread");
+            ht.start();
+            return new TestContentObserver(ht);
+        }
+
+        //On earlier versions of Android, this onChange method is called
+        @Override
+        public void onChange(boolean selfChange){
+            onChange(selfChange, null);
+        }
+
+        @Override
+        public void onChange(boolean selfChange, Uri uri){
+            contentChangedFlag = true;
+        }
+
+        public void waitForNotificationOrFail(){
+            // Note: The Polling Check class is taken from the Android CTS (Compability Test Suit).
+            // It's usefull to look at Android CTS source for ideas on how to test your Android
+            // applications. The reason that PollingCheck works is that, by default, the JUnit
+            // testing framework is not running on the main Android application thread.
+            new PollingCheck(5000){
+                @Override
+                protected boolean check(){
+                    return contentChangedFlag;
+                }
+            }.run();
+            ht.quit();
+        }
+    }
+
+    static TestContentObserver getTestContentObserver(){
+        return TestContentObserver.getTestContentObserver();
+    }
 }

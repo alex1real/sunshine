@@ -151,7 +151,7 @@ public class WeatherProvider extends ContentProvider {
 
         return returnUri;
     }
-    
+
     @Override
     public Cursor query(Uri uri,
                         String[] projection,

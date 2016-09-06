@@ -174,7 +174,7 @@ public class WeatherContract {
                     .appendQueryParameter(COLUMN_DATE, Long.toString(normalizedDate)).build();
         }
 
-        public static long gateDateFromUri(Uri uri){
+        public static long getDateFromUri(Uri uri){
             return Long.parseLong(uri.getPathSegments().get(2));
         }
 

@@ -81,7 +81,33 @@ public class WeatherProvider extends ContentProvider {
     //ToDo: Implement delete(Uri uri, String selection, String[] selectionArgs)
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs){
-        return 0;
+        final SQLiteDatabase sqLiteDatabase = weatherDbHelper.getWritableDatabase();
+        int match = uriMatcher.match(uri);
+        int numAffectedRows;
+
+        switch (match){
+            case LOCATION:
+                numAffectedRows = sqLiteDatabase.delete(WeatherContract.LocationEntry.TABLE_NAME,
+                        selection,
+                        selectionArgs);
+
+                break;
+            case WEATHER:
+                numAffectedRows = sqLiteDatabase.delete(WeatherContract.WeatherEntry.TABLE_NAME,
+                        selection,
+                        selectionArgs);
+
+                break;
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+        }
+
+        if(numAffectedRows > 0)
+            getContext().getContentResolver().notifyChange(uri, null);
+
+        sqLiteDatabase.close();
+
+        return numAffectedRows;
     }
 
     @Override
@@ -216,13 +242,44 @@ public class WeatherProvider extends ContentProvider {
         super.shutdown();
     }
 
-    //ToDo: Implement update(Uri uri, ContentValues values, String selection, String[] selectionArgs)
     @Override
     public int update(Uri uri,
                       ContentValues contentValues,
                       String selection,
                       String[] selectionArgs){
-        return 0;
+
+        final SQLiteDatabase sqLiteDatabase = weatherDbHelper.getWritableDatabase();
+        final int match = uriMatcher.match(uri);
+
+        int numAffectedRows;
+
+        switch (match){
+            case WEATHER:
+                normalizeDate(contentValues);
+                numAffectedRows = sqLiteDatabase.update(WeatherContract.WeatherEntry.TABLE_NAME,
+                        contentValues,
+                        selection,
+                        selectionArgs);
+                break;
+
+            case LOCATION:
+                numAffectedRows = sqLiteDatabase.update(WeatherContract.LocationEntry.TABLE_NAME,
+                        contentValues,
+                        selection,
+                        selectionArgs);
+                break;
+
+            default:
+                numAffectedRows = 0;
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+        }
+
+        if(numAffectedRows != 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+        }
+        sqLiteDatabase.close();
+
+        return numAffectedRows;
     }
 
     /*

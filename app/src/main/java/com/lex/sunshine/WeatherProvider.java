@@ -148,6 +148,7 @@ public class WeatherProvider extends ContentProvider {
             throw new android.database.SQLException("Failed to insert row into " + uri);
 
         getContext().getContentResolver().notifyChange(uri, null);
+        sqLiteDatabase.close();
 
         return returnUri;
     }

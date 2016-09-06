@@ -5,6 +5,7 @@ import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 
@@ -110,13 +111,47 @@ public class WeatherProvider extends ContentProvider {
 
     }
 
-    //ToDo: Implement insert(Uri uri, ContentValues values)
     @Override
     public Uri insert(Uri uri, ContentValues contentValues){
-        return null;
-    }
+        final SQLiteDatabase sqLiteDatabase = weatherDbHelper.getWritableDatabase();
+        final int match = uriMatcher.match(uri);
+        Uri returnUri = null;
 
-    //ToDo: Implement query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder)
+        long _id;
+
+        switch (match){
+            case WEATHER:
+                normalizeDate(contentValues);
+                _id = sqLiteDatabase.insert(WeatherContract.WeatherEntry.TABLE_NAME,
+                        null,
+                        contentValues);
+
+                if(_id > 0)
+                    returnUri = WeatherContract.WeatherEntry.buildWeatherUri(_id);
+
+                break;
+
+            case LOCATION:
+                _id = sqLiteDatabase.insert(WeatherContract.LocationEntry.TABLE_NAME,
+                        null,
+                        contentValues);
+                if(_id > 0)
+                    returnUri = WeatherContract.LocationEntry.buildLocationUri(_id);
+
+                break;
+
+            default:
+                throw new UnsupportedOperationException("Unkwnon uri: " + uri);
+        }
+
+        if(_id <= 0)
+            throw new android.database.SQLException("Failed to insert row into " + uri);
+
+        getContext().getContentResolver().notifyChange(uri, null);
+
+        return returnUri;
+    }
+    
     @Override
     public Cursor query(Uri uri,
                         String[] projection,
@@ -252,7 +287,7 @@ public class WeatherProvider extends ContentProvider {
                                                        String[] projection,
                                                        String sortOrder){
         String locationSettings = WeatherContract.WeatherEntry.getLocationSettingsFromUri(uri);
-        long date = WeatherContract.WeatherEntry.getStartDateFromUri(uri);
+        long date = WeatherContract.WeatherEntry.getDateFromUri(uri);
 
         return weatherByLocationSettingQueryBuilder.query(weatherDbHelper.getReadableDatabase(),
                 projection,

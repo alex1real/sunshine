@@ -75,10 +75,44 @@ public class WeatherProvider extends ContentProvider {
     //Todo: Implement bulkInsert(Uri uri, ContentValues[] values)
     @Override
     public int bulkInsert(Uri uri, ContentValues[] values){
-        return 0;
+        final SQLiteDatabase sqLiteDatabase = weatherDbHelper.getWritableDatabase();
+        final int match = uriMatcher.match(uri);
+        int numAffectedRows = 0;
+        long rowId;
+
+        switch(match){
+            case WEATHER:
+                sqLiteDatabase.beginTransaction();
+
+                try{
+                    for(ContentValues contentValues : values){
+                        normalizeDate(contentValues);
+                        rowId = sqLiteDatabase.insert(
+                                WeatherContract.LocationEntry.TABLE_NAME,
+                                null,
+                                contentValues);
+
+                        if(rowId != -1){
+                            ++numAffectedRows;
+                        }
+                    }
+
+                    sqLiteDatabase.setTransactionSuccessful();
+
+                }
+                finally {
+                    sqLiteDatabase.endTransaction();
+                }
+
+                break;
+
+            default:
+                throw new UnsupportedOperationException();
+        }
+
+        return numAffectedRows;
     }
 
-    //ToDo: Implement delete(Uri uri, String selection, String[] selectionArgs)
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs){
         final SQLiteDatabase sqLiteDatabase = weatherDbHelper.getWritableDatabase();

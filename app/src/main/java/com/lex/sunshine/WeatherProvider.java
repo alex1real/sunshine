@@ -72,7 +72,6 @@ public class WeatherProvider extends ContentProvider {
     /*
      * Public Methods
      */
-    //Todo: Implement bulkInsert(Uri uri, ContentValues[] values)
     @Override
     public int bulkInsert(Uri uri, ContentValues[] values){
         final SQLiteDatabase sqLiteDatabase = weatherDbHelper.getWritableDatabase();
@@ -88,7 +87,7 @@ public class WeatherProvider extends ContentProvider {
                     for(ContentValues contentValues : values){
                         normalizeDate(contentValues);
                         rowId = sqLiteDatabase.insert(
-                                WeatherContract.LocationEntry.TABLE_NAME,
+                                WeatherContract.WeatherEntry.TABLE_NAME,
                                 null,
                                 contentValues);
 
@@ -102,6 +101,8 @@ public class WeatherProvider extends ContentProvider {
                 }
                 finally {
                     sqLiteDatabase.endTransaction();
+
+                    getContext().getContentResolver().notifyChange(uri, null);
                 }
 
                 break;
@@ -142,13 +143,6 @@ public class WeatherProvider extends ContentProvider {
         sqLiteDatabase.close();
 
         return numAffectedRows;
-    }
-
-    @Override
-    public boolean onCreate(){
-        weatherDbHelper = new WeatherDbHelper(getContext());
-
-        return true;
     }
 
     @Override
@@ -211,6 +205,13 @@ public class WeatherProvider extends ContentProvider {
         sqLiteDatabase.close();
 
         return returnUri;
+    }
+
+    @Override
+    public boolean onCreate(){
+        weatherDbHelper = new WeatherDbHelper(getContext());
+
+        return true;
     }
 
     @Override
@@ -317,7 +318,7 @@ public class WeatherProvider extends ContentProvider {
     }
 
     /*
-     * Private Methods
+     * Protected Methods
      */
     /*
      * Students: Here is where you need to create the UriMatcher. This UriMatcher will match each
@@ -350,6 +351,9 @@ public class WeatherProvider extends ContentProvider {
         return uriMatcher;
     }
 
+    /*
+     * Private Methods
+     */
     private Cursor getWeatherByLocationSettings(Uri uri, String[] projection, String sortOrder){
         String locationSettings = WeatherContract.WeatherEntry.getLocationSettingsFromUri(uri);
         long startDate = WeatherContract.WeatherEntry.getStartDateFromUri(uri);

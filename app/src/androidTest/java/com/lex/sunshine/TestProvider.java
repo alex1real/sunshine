@@ -23,6 +23,9 @@ public class TestProvider extends AndroidTestCase {
 
     private static final String LOG_TAG = TestProvider.class.getSimpleName();
 
+    private static final int BULK_INSERT_RECORDS_TO_INSERT = 10;
+
+
     public void testBasicWeatherQuery(){
         // Insert the test record directly into the database
         WeatherDbHelper weatherDbHelper = new WeatherDbHelper(mContext);
@@ -52,6 +55,74 @@ public class TestProvider extends AndroidTestCase {
         TestUtilities.validateCursor("testBasicWeatherQuery", weatherCursor, weatherValues);
     }
 
+    public void testBulkInsert(){
+        // First, let's create a location value
+        ContentValues testValues = TestUtilities.createNorthPoleLocationValues();
+        Uri locationUri = mContext.getContentResolver().insert(
+                WeatherContract.LocationEntry.CONTENT_URI,
+                testValues);
+        long locationRowId = ContentUris.parseId(locationUri);
+
+        // Verify if we got a row back
+        assertTrue(locationRowId != -1);
+
+        // Data's inserted. IN THEORY. Now pull some out to stare at it and verify it made the round
+        // trip
+
+        Cursor cursor = mContext.getContentResolver().query(
+                WeatherContract.LocationEntry.CONTENT_URI,
+                null, // leaving "columns" null just returns all the columns
+                null, // cols for "where" clause
+                null, // values for "where" clause
+                null // sort order
+        );
+
+        TestUtilities.validateCursor("testBulkInsert. Error validating LocationEntry",
+                cursor, testValues);
+
+        // Now we can bulkInsert some weather. In fact, we only implement BulkInsert for weather
+        // entries. With ContentProviders, you really only have to implement the features yous use,
+        // after all
+        ContentValues[] bulkInsertContentValues = createBulkInsertWeatherValues(locationRowId);
+
+        // Register a content observer for our bulk insert.
+        TestUtilities.TestContentObserver weatherObserver = TestUtilities.getTestContentObserver();
+        mContext.getContentResolver().registerContentObserver(
+                WeatherContract.WeatherEntry.CONTENT_URI,
+                true,
+                weatherObserver);
+
+        int insertCount = mContext.getContentResolver().bulkInsert(
+                WeatherContract.WeatherEntry.CONTENT_URI,
+                bulkInsertContentValues
+        );
+
+        weatherObserver.waitForNotificationOrFail();
+        mContext.getContentResolver().unregisterContentObserver(weatherObserver);
+
+        assertEquals(insertCount, BULK_INSERT_RECORDS_TO_INSERT);
+
+        cursor = mContext.getContentResolver().query(
+                WeatherContract.WeatherEntry.CONTENT_URI,
+                null,
+                null,
+                null,
+                WeatherContract.WeatherEntry.COLUMN_DATE + " ASC" // sort order == by DATE ASCENDING
+        );
+
+        // Should have as many records in the database as we've inserted
+        assertEquals(cursor.getCount(), BULK_INSERT_RECORDS_TO_INSERT);
+
+        // Make sure they match the ones we created
+        cursor.moveToFirst();
+        for(int i = 0; i < BULK_INSERT_RECORDS_TO_INSERT; i++, cursor.moveToNext()){
+            TestUtilities.validateCurrentRecord("testBulkInsert. Error validating WeatherEntry " + i,
+                    cursor, bulkInsertContentValues[i]);
+        }
+
+        cursor.close();
+
+    }
 
     // Make sure we can still delete after adding/update stuff
     public void testDeleteRecords(){
@@ -322,9 +393,36 @@ public class TestProvider extends AndroidTestCase {
         cursor.close();
     }
 
-    /*
-    Private Methods
-     */
+    /*******************
+     * Private Methods *
+     ******************/
+    private ContentValues[] createBulkInsertWeatherValues(long locationRowId){
+        long currentTestDate = TestUtilities.TEST_DATE;
+        long millisecondsInADay = 1000*60*60*24;
+        ContentValues[] returnContentValues = new ContentValues[BULK_INSERT_RECORDS_TO_INSERT];
+
+        ContentValues weatherValues;
+        for(int i = 0; i < BULK_INSERT_RECORDS_TO_INSERT; i++, currentTestDate += millisecondsInADay){
+            weatherValues = new ContentValues();
+
+            weatherValues.put(WeatherContract.WeatherEntry.COLUMN_LOC_KEY, locationRowId);
+            weatherValues.put(WeatherContract.WeatherEntry.COLUMN_DATE, currentTestDate);
+            weatherValues.put(WeatherContract.WeatherEntry.COLUMN_DEGREES, 1.1);
+            weatherValues.put(WeatherContract.WeatherEntry.COLUMN_HUMIDITY, 1.2 + 0.01 * (float)i);
+            weatherValues.put(WeatherContract.WeatherEntry.COLUMN_PRESSURE, 1.3 - 0.01 * (float)i);
+            weatherValues.put(WeatherContract.WeatherEntry.COLUMN_MAX_TEMP, 75 + 1);
+            weatherValues.put(WeatherContract.WeatherEntry.COLUMN_MIN_TEMP, 65 - 1);
+            weatherValues.put(WeatherContract.WeatherEntry.COLUMN_SHORT_DESC, "Asteroids");
+            weatherValues.put(WeatherContract.WeatherEntry.COLUMN_WIND_SPEED, 5.5 + 0.2 * (float)i);
+            weatherValues.put(WeatherContract.WeatherEntry.COLUMN_WEATHER_ID, 321);
+
+            returnContentValues[i] = weatherValues;
+        }
+
+        return returnContentValues;
+
+    }
+
     private void deleteAllRecordsFromProvider(){
         mContext.getContentResolver().delete(WeatherContract.WeatherEntry.CONTENT_URI,
                 null,

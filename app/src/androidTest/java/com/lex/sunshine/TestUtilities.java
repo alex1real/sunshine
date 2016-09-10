@@ -117,17 +117,7 @@ public class TestUtilities extends AndroidTestCase {
         return weatherId;
     }
 
-    public static void validateCursor(String error, Cursor valueCursor, ContentValues expectedValues){
-        assertTrue("Empty cursor returned. " + error, valueCursor.moveToFirst());
-        validateCurrentRecord(error, valueCursor, expectedValues);
-        valueCursor.close();
-    }
-
-
-    /*
-     * Private Methods
-     */
-    private static void validateCurrentRecord(String error, Cursor valueCursor, ContentValues expectedValues) {
+    public static void validateCurrentRecord(String error, Cursor valueCursor, ContentValues expectedValues) {
         Set<Map.Entry<String, Object>> valueSet = expectedValues.valueSet();
 
         for (Map.Entry<String, Object> entry : valueSet) {
@@ -144,6 +134,16 @@ public class TestUtilities extends AndroidTestCase {
 
     }
 
+    public static void validateCursor(String error, Cursor valueCursor, ContentValues expectedValues){
+        assertTrue("Empty cursor returned. " + error, valueCursor.moveToFirst());
+        validateCurrentRecord(error, valueCursor, expectedValues);
+        valueCursor.close();
+    }
+
+
+    /*
+     * Private Methods
+     */
     /*
      The functions provided inside of TestProvider use this utility class to test the ContentObserver
      callbacks using the Polling Check class the we grabbed from the Android CTS tests.

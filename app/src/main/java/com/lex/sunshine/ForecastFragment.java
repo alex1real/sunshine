@@ -1,27 +1,20 @@
 package com.lex.sunshine;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.ListAdapter;
 import android.widget.ListView;
-import android.widget.Toast;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -134,7 +127,7 @@ public class ForecastFragment
      * Private methods *
      ******************/
     private void getWeatherForecast(){
-        FetchWeatherTask fetchWeatherTask = new FetchWeatherTask(this);
+        FetchWeatherTask fetchWeatherTask = new FetchWeatherTask(getContext(), forecastArrayAdapter);
 
         //Retrieving the location from a SharedPreference
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());

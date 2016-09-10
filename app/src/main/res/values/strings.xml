@@ -33,4 +33,6 @@
         <item>metric</item>
         <item>imperial</item>
     </string-array>
+    <string name="pref_temperature_unit_metric">metric</string>
+    <string name="pref_temperature_unit_imperial">imperial</string>
 </resources>

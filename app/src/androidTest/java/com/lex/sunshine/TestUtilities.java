@@ -16,7 +16,7 @@ import com.lex.sunshine.db.WeatherDbHelper;
 import junit.framework.Test;
 
 import java.util.Map;
-import java.util.Set;
+    import java.util.Set;
 
 /**
  * Created by Alex on 18/08/2016.

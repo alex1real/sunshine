@@ -220,7 +220,7 @@ public class TestProvider extends AndroidTestCase {
                 null  // sort order
         );
 
-        TestUtilities.validateCursor("testInsertReadProvider. Error validationg Location Entry.",
+        TestUtilities.validateCursor("testInsertReadProvider. Error validating Location Entry.",
                 cursor,
                 testValues);
 

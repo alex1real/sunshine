@@ -1,7 +1,8 @@
 package com.lex.sunshine;
 
-import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -11,9 +12,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
+
+import com.lex.sunshine.db.WeatherContract;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,12 +23,11 @@ import java.util.Arrays;
  * A placeholder fragment containing a simple view.
  */
 public class ForecastFragment
-        extends Fragment
-        implements AsyncTaskDelegator<String[]>{
+        extends Fragment{
 
     private final String LOG_TAG = ForecastFragment.class.getSimpleName();
 
-    private ArrayAdapter<String> forecastArrayAdapter;
+    private ForecastAdapter forecastAdapter;
     private String defaultLocation;
 
     /****************
@@ -71,41 +71,22 @@ public class ForecastFragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        //Remove fake data
-        String[] forecastArray = new String[0];
+        String locationSetting = Utility.getPreferredLocation(getActivity());
+        String sortOrder = WeatherContract.WeatherEntry.COLUMN_DATE + " ASC";
 
-        ArrayList<String> weekForecast = new ArrayList<String>(Arrays.asList(forecastArray));
+        Uri weatherForLocationUri = WeatherContract.WeatherEntry.buildWeatherLocationWithStartDate(
+                locationSetting, System.currentTimeMillis());
 
-        this.forecastArrayAdapter = new ArrayAdapter<String>(this.getActivity(),
-                                                             R.layout.list_item_forecast,
-                                                             R.id.list_item_forecast_textview,
-                                                             weekForecast);
+        Cursor cursor = getActivity().getContentResolver().query(weatherForLocationUri,
+                null, null, null, sortOrder);
+
+        forecastAdapter = new ForecastAdapter(getActivity(), cursor, 0);
 
         View rootView = inflater.inflate(R.layout.fragment_forecast, container, false);
 
-
         ListView listViewForecast = (ListView)rootView.findViewById(R.id.listview_forecast);
 
-        listViewForecast.setAdapter(forecastArrayAdapter);
-
-        listViewForecast.setOnItemClickListener(
-            new AdapterView.OnItemClickListener(){
-                @Override
-                public void onItemClick(AdapterView<?> parent,
-                                        View view,
-                                        int position,
-                                        long id){
-                    //Retreiving the forecast String from the View's Adapter.
-                    ArrayAdapter<String> viewArrayAdapter = (ArrayAdapter<String>)parent.getAdapter();
-                    String forecastMsg = viewArrayAdapter.getItem(position);
-
-                    //Displaying the forecast in another activity
-                    Intent detailActivityIntent = new Intent(getActivity(), DetailActivity.class);
-                    detailActivityIntent.putExtra(Intent.EXTRA_TEXT, forecastMsg);
-                    startActivity(detailActivityIntent);
-                }
-            }
-        );
+        listViewForecast.setAdapter(forecastAdapter);
 
         return rootView;
     }
@@ -117,17 +98,11 @@ public class ForecastFragment
         this.getWeatherForecast();
     }
 
-
-    @Override
-    public void updateAsyncResult(String[] results) {
-        this.refreshForecastDisplay(results);
-    }
-
     /*******************
      * Private methods *
      ******************/
     private void getWeatherForecast(){
-        FetchWeatherTask fetchWeatherTask = new FetchWeatherTask(getContext(), forecastArrayAdapter);
+        FetchWeatherTask fetchWeatherTask = new FetchWeatherTask(getContext());
 
         //Retrieving the location from a SharedPreference
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
@@ -135,10 +110,5 @@ public class ForecastFragment
         String unit = sharedPref.getString(getString(R.string.pref_temperature_unit_key), "");
 
         fetchWeatherTask.execute(location, unit);
-    }
-
-    private void refreshForecastDisplay(String[] forecastList){
-        this.forecastArrayAdapter.clear();
-        this.forecastArrayAdapter.addAll(forecastList);
     }
 }

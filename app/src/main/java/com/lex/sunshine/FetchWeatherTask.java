@@ -10,7 +10,6 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.util.Log;
-import android.widget.ArrayAdapter;
 
 import com.lex.sunshine.db.WeatherContract;
 
@@ -32,11 +31,10 @@ import java.util.GregorianCalendar;
 /**
  * Created by Alex on 04/07/2016.
  *                                    AsyncTask<Params, Progress, Result>*/
-public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
+public class FetchWeatherTask extends AsyncTask<String, Void, Void> {
 
     private final String LOG_TAG = FetchWeatherTask.class.getSimpleName();
 
-    private ArrayAdapter<String> forecastAdapter;
     private final Context context;
 
     private boolean debug = true;
@@ -44,9 +42,8 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
     /*
      * Constructors
      */
-    public FetchWeatherTask(Context context, ArrayAdapter<String> forecastAdapter){
+    public FetchWeatherTask(Context context){
         this.context = context;
-        this.forecastAdapter = forecastAdapter;
     }
 
     /*
@@ -101,7 +98,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
     }
 
     @Override
-    protected String[] doInBackground(String... params){
+    protected Void doInBackground(String... params){
         // If there's no location information, there's nothing to look up. Verify size of params.
         if(params.length == 0){
             return null;
@@ -194,7 +191,7 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
         }
 
         try{
-            return  getWeatherDataFromJson(forecastJsonStr, locationQuery);
+            getWeatherDataFromJson(forecastJsonStr, locationQuery);
         }
         catch(JSONException e){
             Log.e(LOG_TAG, e.getMessage(), e);
@@ -204,103 +201,16 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
         return null;
     }
 
-    @Override
-    protected void onPostExecute(String[] result){
-        if(result != null && forecastAdapter != null){
-            forecastAdapter.clear();
-            for(String dayForecastStr : result){
-                forecastAdapter.addAll(dayForecastStr);
-            }
-            // New data is back form the server
-        }
-    }
-
     /*
      * Private Methods
      */
-    /*
-     * This code will allow the FetchWeatherTask to continue to return the strings that the UX
-     * expects so that we can continue to test the application even once we being using the database
-     */
-    private String[] convertContentValuesToUXFormat(ContentValues[] contentValuesArray){
-        // Return strings to keep UI functional for now
-        String[] resultStrs = new String[contentValuesArray.length];
-
-        String readableDate;
-        String weatherDesc;
-        String highAndLow;
-
-        for(int i = 0; i < contentValuesArray.length; i++){
-            ContentValues weatherValues = contentValuesArray[i];
-
-            readableDate = getReadableDateString(weatherValues.getAsLong(WeatherContract.WeatherEntry.COLUMN_DATE));
-
-            highAndLow = this.formatHighLows(
-                    weatherValues.getAsDouble(WeatherContract.WeatherEntry.COLUMN_MAX_TEMP),
-                    weatherValues.getAsDouble(WeatherContract.WeatherEntry.COLUMN_MIN_TEMP));
-
-            weatherDesc = weatherValues.getAsString(WeatherContract.WeatherEntry.COLUMN_SHORT_DESC);
-
-            resultStrs[i] = readableDate + " - " + weatherDesc + " - " + highAndLow;
-        }
-
-        return resultStrs;
-    }
-
-    /*
-     * Prepare weather Low/Highs for presentation
-     */
-    private String formatHighLows(double high, double low){
-        /*
-         Data is fetched in Celsius by default,
-         If user prefers to see in Fahrenheit, convert the values here.
-         We do that rather than fetching in Fahrenheit so that the user can change this option
-         without us having to re-fetch the data once we start storing the values in a database.
-         */
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
-        String unitType = sharedPreferences.getString(
-                context.getString(R.string.pref_temperature_unit_key),
-                context.getString(R.string.pref_temperature_unit_metric));
-
-        if(unitType.equals(context.getString(R.string.pref_temperature_unit_imperial))){
-            high = (high * 1.8) + 32;
-            low = (low *1.8) + 32;
-        }
-        else if(!unitType.equals(context.getString(R.string.pref_temperature_unit_metric))){
-            Log.d(LOG_TAG, "Unit type not found: " + unitType);
-        }
-
-        // For presentation, assume the user doesn't care about tenth of a degree
-        long roundedHigh = Math.round(high);
-        long roundedLow = Math.round(low);
-
-        String highLowStr = "Max " + roundedHigh + " / " + "Min " + roundedLow;
-
-        return highLowStr;
-    }
-
-    /*
-     * The date/time convesion time code is going to be moved outside the async task later, so for
-     * convenience we're breaking it out int its own method now.
-     */
-    private String getReadableDateString(long time){
-        // Because the API returns an unix timestamp (measured in seconds), it must be converted to
-        // milliseconds in order to be converted to a valid date.
-        GregorianCalendar gc = new GregorianCalendar();
-        gc.setTimeInMillis(time);
-
-        SimpleDateFormat sdf = new SimpleDateFormat("E, MMM d");
-
-        return sdf.format(gc.getTime()).toString();
-    }
-
     /*
      * Take the string representing the complete forecast in Json format and pull out the data that
      * we need to construct the String needed for the wireframes.
      *
      * Constructor takes the JSON string and converts it into an Object hierarchy for us.
      */
-    private String[] getWeatherDataFromJson(String forecastJsonStr,
+    private void getWeatherDataFromJson(String forecastJsonStr,
                                         String locationSettings)
             throws JSONException{
         // Now we have a string representing the complete forecast in JSON Format.
@@ -412,38 +322,10 @@ public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
                         contentValuesArray);
             }
 
-            // Sort Order: Ascending, by date
-            String sortOrder = WeatherContract.WeatherEntry.COLUMN_DATE + " ASC";
-            Uri weatherForecastLocationUri = WeatherContract.WeatherEntry.buildWeatherLocationWithStartDate(
-                    locationSettings,
-                    new GregorianCalendar().getTimeInMillis()
-            );
-
-            Cursor cursor = context.getContentResolver().query(weatherForecastLocationUri,
-                    null, null, null, sortOrder);
-
-            contentValuesArray = new ContentValues[cursor.getCount()];
-            if(cursor.moveToFirst()){
-                int i = 0;
-                do{
-                    ContentValues cv = new ContentValues();
-                    DatabaseUtils.cursorRowToContentValues(cursor, cv);
-                    contentValuesArray[i++] = cv;
-                }while(cursor.moveToNext());
-            }
-
-            Log.d(LOG_TAG, "FetchWeatherTask Complete. " + contentValuesArray.length + " inserted.");
-
-            String[] resultsStr = this.convertContentValuesToUXFormat(contentValuesArray);
-
-            return resultsStr;
-
         }
         catch(JSONException e){
             Log.e(LOG_TAG, e.getMessage(), e);
             e.printStackTrace();
         }
-
-        return null;
     }
 }

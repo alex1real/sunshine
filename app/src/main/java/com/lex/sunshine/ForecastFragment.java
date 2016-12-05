@@ -29,6 +29,37 @@ public class ForecastFragment
     private final String LOG_TAG = ForecastFragment.class.getSimpleName();
     private final int FORECAST_LOADER_ID = 100;
 
+    private static final String[] FORECAST_PROJECTION = {
+            WeatherContract.WeatherEntry.TABLE_NAME + "."
+                    + WeatherContract.WeatherEntry._ID,
+            WeatherContract.WeatherEntry.TABLE_NAME + "."
+                    + WeatherContract.WeatherEntry.COLUMN_DATE,
+            WeatherContract.WeatherEntry.TABLE_NAME + "."
+                    + WeatherContract.WeatherEntry.COLUMN_SHORT_DESC,
+            WeatherContract.WeatherEntry.TABLE_NAME + "."
+                    + WeatherContract.WeatherEntry.COLUMN_MAX_TEMP,
+            WeatherContract.WeatherEntry.TABLE_NAME + "."
+                    + WeatherContract.WeatherEntry.COLUMN_MIN_TEMP,
+            WeatherContract.LocationEntry.TABLE_NAME + "."
+                    + WeatherContract.LocationEntry.COLUMN_LOCATION_SETTINGS,
+            WeatherContract.WeatherEntry.TABLE_NAME + "."
+                    + WeatherContract.WeatherEntry.COLUMN_WEATHER_ID,
+            WeatherContract.LocationEntry.TABLE_NAME + "."
+                    + WeatherContract.LocationEntry.COLUMN_COORD_LAT,
+            WeatherContract.LocationEntry.TABLE_NAME + "."
+                    + WeatherContract.LocationEntry.COLUMN_COORD_LONG
+    };
+
+    protected static final int COL_WEATHER_ID = 0;
+    protected static final int COL_WEATHER_DATE = 1;
+    protected static final int COL_WEATHER_DESC = 2;
+    protected static final int COL_WEATHER_MAX_TEMP = 3;
+    protected static final int COL_WEATHER_MIN_TEMP = 4;
+    protected static final int COL_LOCATION_SETTING = 5;
+    protected static final int COL_WEATHER_CONDITION_ID = 6;
+    protected static final int COL_LOCATION_LAT = 7;
+    protected static final int COL_LOCATION_LONG = 8;
+
     private ForecastAdapter forecastAdapter;
     private String defaultLocation;
 
@@ -114,7 +145,7 @@ public class ForecastFragment
 
         return new CursorLoader(getActivity(),
                 weatherForLocationUri,
-                null,
+                FORECAST_PROJECTION,
                 null,
                 null,
                 sortOrder);

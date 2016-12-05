@@ -61,7 +61,11 @@ public class DetailActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
 
-        forecastMsg = getActivity().getIntent().getStringExtra(Intent.EXTRA_TEXT);
+        Intent intent = getActivity().getIntent();
+
+        if(intent!= null) {
+            forecastMsg = intent.getDataString();
+        }
 
         TextView detailText = (TextView)rootView.findViewById(R.id.detailText);
         detailText.setText(forecastMsg);

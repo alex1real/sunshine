@@ -42,11 +42,11 @@ public class ForecastAdapter extends CursorAdapter {
      * This is ported from FetchWeatherTask -- but now we go straight from the cursor to string.
      */
     private String convertCursorRowToUXFormat(Cursor cursor){
-        String highAndLow = formatHighLows(cursor.getDouble(ForecastFragment.COL_WEATHER_MAX_TEMP),
-                cursor.getDouble(ForecastFragment.COL_WEATHER_MIN_TEMP), context);
+        String highAndLow = formatHighLows(cursor.getDouble(DetailActivityFragment.COL_WEATHER_MAX_TEMP),
+                cursor.getDouble(DetailActivityFragment.COL_WEATHER_MIN_TEMP), context);
 
-        return Utility.formatDate(cursor.getLong(ForecastFragment.COL_WEATHER_DATE))
-                + " - " + cursor.getString(ForecastFragment.COL_WEATHER_DESC)
+        return Utility.formatDate(cursor.getLong(DetailActivityFragment.COL_WEATHER_DATE))
+                + " - " + cursor.getString(DetailActivityFragment.COL_WEATHER_DESC)
                 + " - " + highAndLow;
     }
 

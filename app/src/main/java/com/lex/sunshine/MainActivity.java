@@ -16,9 +16,18 @@ import android.view.MenuItem;
 
 public class MainActivity extends AppCompatActivity {
 
+    /*************
+     * Constants *
+     ************/
     private final String LOG_TAG = MainActivity.class.getSimpleName();
     private final String LOCATION_BASE_URI = "geo:0,0";
     private final String QUERY_LOCATION_PARAM = "q";
+
+    /*************
+     * Variables *
+     ************/
+    private String location;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,7 +35,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        
+
+        this.location = Utility.getPreferredLocation(this);
     }
 
     @Override
@@ -57,6 +67,21 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+
+        String sysPrefLocation = Utility.getPreferredLocation(this);
+
+        if(!this.location.equals(sysPrefLocation)){
+            ForecastFragment ff = (ForecastFragment)getSupportFragmentManager().findFragmentById(R.id.fragmentMain);
+
+            ff.onLocationChanged();
+
+            this.location = sysPrefLocation;
+        }
     }
 
     /***********

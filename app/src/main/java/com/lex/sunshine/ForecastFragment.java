@@ -148,13 +148,6 @@ public class ForecastFragment
         return rootView;
     }
 
-    @Override
-    public void onStart(){
-        super.onStart();
-
-        this.getWeatherForecast();
-    }
-
     /************************************************
      * Overriders for LoaderManager.LoaderCallbacks *
      ***********************************************/
@@ -182,6 +175,12 @@ public class ForecastFragment
     @Override
     public void onLoaderReset(Loader<Cursor> loader){
         this.forecastAdapter.swapCursor(null);
+    }
+
+    public void onLocationChanged(){
+        this.getWeatherForecast();
+
+        getLoaderManager().restartLoader(FORECAST_LOADER_ID, null, this);
     }
 
     /*******************

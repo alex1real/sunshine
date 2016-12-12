@@ -47,29 +47,26 @@ public class ForecastAdapter extends CursorAdapter {
     @Override
     public void bindView(View view, Context context, Cursor cursor){
 
+        ViewHolder viewHolder = (ViewHolder)view.getTag();
+
         // Read weather icon from cursor
         int weatherId = cursor.getInt(ForecastFragment.COL_WEATHER_ID);
         //ToDo: Change place holder image
-        ImageView iconView = (ImageView)view.findViewById(R.id.list_item_icon);
-        iconView.setImageResource(R.mipmap.ic_launcher);
+        viewHolder.iconView.setImageResource(R.mipmap.ic_launcher);
 
         long dateInMillis = cursor.getLong(ForecastFragment.COL_WEATHER_DATE);
-        TextView dateView = (TextView)view.findViewById(R.id.list_item_date_textview);
-        dateView.setText(Utility.getFriendlyDayString(context, dateInMillis));
+        viewHolder.dateView.setText(Utility.getFriendlyDayString(context, dateInMillis));
 
         String weatherDesc = cursor.getString(ForecastFragment.COL_WEATHER_DESC);
-        TextView weatherDescView = (TextView)view.findViewById(R.id.list_item_forecast_textview);
-        weatherDescView.setText(weatherDesc);
+        viewHolder.descriptionView.setText(weatherDesc);
 
         boolean isMetric = Utility.isMetric(context);
 
         int maxTemp = cursor.getInt(ForecastFragment.COL_WEATHER_MAX_TEMP);
-        TextView maxTempView = (TextView)view.findViewById(R.id.list_item_high_textview);
-        maxTempView.setText(Utility.formatTemperature(maxTemp, isMetric));
+        viewHolder.highTempView.setText(Utility.formatTemperature(maxTemp, isMetric));
 
         int minTemp = cursor.getInt(ForecastFragment.COL_WEATHER_MIN_TEMP);
-        TextView minTempView = (TextView)view.findViewById(R.id.list_item_low_textview);
-        minTempView.setText(Utility.formatTemperature(minTemp, isMetric));
+        viewHolder.lowTempView.setText(Utility.formatTemperature(minTemp, isMetric));
     }
 
     @Override
@@ -94,6 +91,9 @@ public class ForecastAdapter extends CursorAdapter {
                 : R.layout.list_item_forecast;
 
         View view = LayoutInflater.from(context).inflate(layoutId, parent, false);
+
+        ViewHolder viewHolder = new ViewHolder(view);
+        view.setTag(viewHolder);
 
         return view;
     }

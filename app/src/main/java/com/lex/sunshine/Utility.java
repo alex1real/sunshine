@@ -16,7 +16,7 @@ import java.util.GregorianCalendar;
 
 public class Utility {
 
-    public static String formatTemperature(double temperature, boolean isMetric){
+    public static String formatTemperature(Context context, double temperature, boolean isMetric){
         double temp;
 
         if(!isMetric){
@@ -26,7 +26,7 @@ public class Utility {
             temp = temperature;
         }
 
-        return String.format("%.0fº", temp);
+        return String.format(context.getString(R.string.format_temperature), temp);
     }
 
     public static String formatDate(long dateInMillis){

@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.lex.sunshine.db.WeatherContract;
@@ -65,11 +66,30 @@ public class ForecastAdapter extends CursorAdapter {
      */
     @Override
     public void bindView(View view, Context context, Cursor cursor){
-        // our view is pretty simple here --- just a text view
-        // we'll keep the UI functional with a simple (and slow!) binding
 
-        TextView tv = (TextView)view;
-        tv.setText(this.convertCursorRowToUXFormat(cursor));
+        // Read weather icon from cursor
+        int weatherId = cursor.getInt(ForecastFragment.COL_WEATHER_ID);
+        //ToDo: Change place holder image
+        ImageView iconView = (ImageView)view.findViewById(R.id.list_item_icon);
+        iconView.setImageResource(R.mipmap.ic_launcher);
+
+        long dateInMillis = cursor.getLong(ForecastFragment.COL_WEATHER_DATE);
+        TextView dateView = (TextView)view.findViewById(R.id.list_item_date_textview);
+        dateView.setText(Utility.getFriendlyDayString(context, dateInMillis));
+
+        String weatherDesc = cursor.getString(ForecastFragment.COL_WEATHER_DESC);
+        TextView weatherDescView = (TextView)view.findViewById(R.id.list_item_forecast_textview);
+        weatherDescView.setText(weatherDesc);
+
+        boolean isMetric = Utility.isMetric(context);
+
+        int maxTemp = cursor.getInt(ForecastFragment.COL_WEATHER_MAX_TEMP);
+        TextView maxTempView = (TextView)view.findViewById(R.id.list_item_high_textview);
+        maxTempView.setText(Utility.formatTemperature(maxTemp, isMetric));
+
+        int minTemp = cursor.getInt(ForecastFragment.COL_WEATHER_MIN_TEMP);
+        TextView minTempView = (TextView)view.findViewById(R.id.list_item_low_textview);
+        minTempView.setText(Utility.formatTemperature(minTemp, isMetric));
     }
 
 }

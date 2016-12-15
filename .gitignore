@@ -1,6 +1,7 @@
 # idea project files
 .idea/
 *.iml
+*.log
 
 ##Gradle-based build
 .gradle/

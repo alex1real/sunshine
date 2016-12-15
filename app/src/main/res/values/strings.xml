@@ -4,10 +4,14 @@
     <string name="title_activity_detail">DetailActivity</string>
     <string name="title_activity_settings">Settings</string>
 
-    <!-- Date Format -->
     <string name="today">Today</string>
     <string name="tomorrow">Tomorrow</string>
+
+    <!-- Formatting -->
+    <string name="format_humidity">Humidity: <xliff:g id="humidity">%1.0f</xliff:g>\u0025\u0025</string>
+    <string name="format_pressure">Pressure: <xliff:g id="pressure">%1.0f</xliff:g> kpa</string>
     <string name="format_temperature"><xliff:g id="temp">%1.0f</xliff:g>\u00B0</string>
+    <string name="format_wind_kmh">Wind: <xliff:g id="speed">%1.0f</xliff:g> km/h <xliff:g id="direction">%s</xliff:g></string>
 
     <!-- Menu -->
     <string name="action_settings">Settings</string>

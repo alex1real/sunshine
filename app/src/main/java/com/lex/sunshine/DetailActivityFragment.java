@@ -17,6 +17,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.lex.sunshine.db.WeatherContract;
@@ -27,6 +28,9 @@ import com.lex.sunshine.db.WeatherContract;
 public class DetailActivityFragment extends Fragment
     implements LoaderManager.LoaderCallbacks<Cursor>{
 
+    /*************
+     * Constants *
+     ************/
     private static final String LOG_TAG = DetailActivityFragment.class.getSimpleName();
     private static final String FORECAST_SHARE_HASHTAG = " #SunshineApp";
     private static final int FORECAST_LOADER_ID = 0;
@@ -41,7 +45,17 @@ public class DetailActivityFragment extends Fragment
             WeatherContract.WeatherEntry.TABLE_NAME + "."
                     + WeatherContract.WeatherEntry.COLUMN_MAX_TEMP,
             WeatherContract.WeatherEntry.TABLE_NAME + "."
-                    + WeatherContract.WeatherEntry.COLUMN_MIN_TEMP
+                    + WeatherContract.WeatherEntry.COLUMN_MIN_TEMP,
+            WeatherContract.WeatherEntry.TABLE_NAME + "."
+                    + WeatherContract.WeatherEntry.COLUMN_HUMIDITY,
+            WeatherContract.WeatherEntry.TABLE_NAME + "."
+                    + WeatherContract.WeatherEntry.COLUMN_WIND_SPEED,
+            WeatherContract.WeatherEntry.TABLE_NAME + "."
+                    + WeatherContract.WeatherEntry.COLUMN_DEGREES,
+            WeatherContract.WeatherEntry.TABLE_NAME + "."
+                    + WeatherContract.WeatherEntry.COLUMN_PRESSURE,
+            WeatherContract.WeatherEntry.TABLE_NAME + "."
+                    + WeatherContract.WeatherEntry.COLUMN_WEATHER_ID
     };
 
     protected static final int COL_WEATHER_ID = 0;
@@ -49,8 +63,15 @@ public class DetailActivityFragment extends Fragment
     protected static final int COL_WEATHER_DESC = 2;
     protected static final int COL_WEATHER_MAX_TEMP = 3;
     protected static final int COL_WEATHER_MIN_TEMP = 4;
+    protected static final int COL_WEATHER_HUMIDITY = 5;
+    protected static final int COL_WEATHER_WIND_SPEED = 6;
+    protected static final int COL_WEATHER_WIND_DEGREES = 7;
+    protected static final int COL_WEATHER_PRESSURE = 8;
+    protected static final int COL_WEATHER_CONDITION_ID = 9;
 
-    private String forecastMsg;
+    /*************
+     * Variables *
+     ************/
     private ShareActionProvider shareActionProvider;
 
 
@@ -93,8 +114,8 @@ public class DetailActivityFragment extends Fragment
         //Fetch and store ShareActionProvider
         this.shareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
 
-        if(this.forecastMsg != null)
-            this.shareActionProvider.setShareIntent(this.getShareIntent(this.forecastMsg, FORECAST_SHARE_HASHTAG));
+        //if(this.forecastMsg != null)
+        //    this.shareActionProvider.setShareIntent(this.getShareIntent(this.forecastMsg, FORECAST_SHARE_HASHTAG));
     }
 
     @Override
@@ -125,15 +146,53 @@ public class DetailActivityFragment extends Fragment
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        TextView detailText = (TextView)getView().findViewById(R.id.detailText);
-        this.forecastMsg = this.convertCursorRowToUXFormat(data);
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        cursor.moveToFirst();
+        View view = getView();
 
-        detailText.setText(forecastMsg);
+        long dateInMillis = cursor.getLong(DetailActivityFragment.COL_WEATHER_DATE);
+        TextView weekDayView = (TextView)view.findViewById(R.id.detail_day_textview);
+        weekDayView.setText(Utility.getWeekDay(dateInMillis));
+
+        TextView dateView = (TextView)view.findViewById(R.id.detail_date_textview);
+        dateView.setText(Utility.getShortDate(dateInMillis));
+
+        boolean isMetric = Utility.isMetric(getContext());
+        Context context = getContext();
+
+        double maxTemp = cursor.getDouble(DetailActivityFragment.COL_WEATHER_MAX_TEMP);
+        TextView maxTempView = (TextView)view.findViewById(R.id.detail_high_textview);
+        maxTempView.setText(Utility.formatTemperature(context, maxTemp, isMetric));
+
+        double minTemp = cursor.getDouble(DetailActivityFragment.COL_WEATHER_MIN_TEMP);
+        TextView minTempView = (TextView) view.findViewById(R.id.detail_low_textview);
+        minTempView.setText(Utility.formatTemperature(context, minTemp, isMetric));
+
+        int weatherId = cursor.getInt(DetailActivityFragment.COL_WEATHER_CONDITION_ID);
+        int iconId = Utility.selectColorfulIcon(weatherId);
+        ImageView iconView = (ImageView)view.findViewById(R.id.detail_icon);
+        iconView.setImageResource(iconId);
+
+        String description = cursor.getString(DetailActivityFragment.COL_WEATHER_DESC);
+        TextView descriptionView = (TextView)view.findViewById(R.id.detail_forecast_textview);
+        descriptionView.setText(description);
+
+        double humidity = cursor.getDouble(DetailActivityFragment.COL_WEATHER_HUMIDITY);
+        TextView humidityView = (TextView)view.findViewById(R.id.detail_humidity_textview);
+        humidityView.setText(Utility.formatHumidity(context, humidity));
+
+        double windSpeed = cursor.getDouble(DetailActivityFragment.COL_WEATHER_WIND_SPEED);
+        double windDegrees = cursor.getDouble(DetailActivityFragment.COL_WEATHER_WIND_DEGREES);
+        TextView speedView = (TextView)view.findViewById(R.id.detail_wind_textview);
+        speedView.setText(Utility.formatWind(context, windSpeed, windDegrees));
+
+        double pressure = cursor.getDouble(DetailActivityFragment.COL_WEATHER_PRESSURE);
+        TextView pressureView = (TextView)view.findViewById(R.id.detail_pressure_textview);
+        pressureView.setText(Utility.formatPressure(context, pressure));
 
         if(shareActionProvider != null){
-            shareActionProvider.setShareIntent(this.getShareIntent(this.forecastMsg,
-                    FORECAST_SHARE_HASHTAG));
+            //shareActionProvider.setShareIntent(this.getShareIntent(this.forecastMsg,
+            //        FORECAST_SHARE_HASHTAG));
         }
     }
 

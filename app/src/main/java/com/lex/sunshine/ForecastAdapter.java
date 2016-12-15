@@ -50,9 +50,10 @@ public class ForecastAdapter extends CursorAdapter {
         ViewHolder viewHolder = (ViewHolder)view.getTag();
 
         // Read weather icon from cursor
-        int weatherId = cursor.getInt(ForecastFragment.COL_WEATHER_ID);
-        //ToDo: Change place holder image
-        viewHolder.iconView.setImageResource(R.mipmap.ic_launcher);
+        int weatherId = cursor.getInt(ForecastFragment.COL_WEATHER_CONDITION_ID);
+        int cursorPosition = cursor.getPosition();
+        int iconId = this.selectIcon(weatherId, cursorPosition);
+        viewHolder.iconView.setImageResource(iconId);
 
         long dateInMillis = cursor.getLong(ForecastFragment.COL_WEATHER_DATE);
         viewHolder.dateView.setText(Utility.getFriendlyDayString(context, dateInMillis));
@@ -102,6 +103,19 @@ public class ForecastAdapter extends CursorAdapter {
      * Private Methods *
      ******************/
     /*
+     * Based on the cursor weather.weather_id column, select the Icon to be displayed
+     */
+    public int selectIcon(int weatherId, int cursorPosition){
+        int viewType = this.getItemViewType(cursorPosition);
+
+        if(viewType == this.VIEW_TYPE_TODAY){
+            return Utility.selectColorfulIcon(weatherId);
+        }
+        else{
+            return Utility.selectBlackWhiteIcon(weatherId);
+        }
+    }
+    /*
      * Prepare the weather high/lows for presentation
      */
     private String formatHighLows(double high, double low, Context context){
@@ -111,17 +125,5 @@ public class ForecastAdapter extends CursorAdapter {
                 + "/" + Utility.formatTemperature(context, low, isMetric);
 
         return highLowStr;
-    }
-
-    /*
-     * This is ported from FetchWeatherTask -- but now we go straight from the cursor to string.
-     */
-    private String convertCursorRowToUXFormat(Cursor cursor){
-        String highAndLow = formatHighLows(cursor.getDouble(DetailActivityFragment.COL_WEATHER_MAX_TEMP),
-                cursor.getDouble(DetailActivityFragment.COL_WEATHER_MIN_TEMP), context);
-
-        return Utility.formatDate(cursor.getLong(DetailActivityFragment.COL_WEATHER_DATE))
-                + " - " + cursor.getString(DetailActivityFragment.COL_WEATHER_DESC)
-                + " - " + highAndLow;
     }
 }

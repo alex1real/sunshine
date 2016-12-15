@@ -14,7 +14,7 @@ public class WeatherDbHelper extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "weather.db";
 
     //If you change the database schema, you must increment the database version
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
 
     public WeatherDbHelper(Context context){
         //(Context context, String databaseName, SQLiteDatabase.CursorFactory factory, int DatabaseVersion)
@@ -24,7 +24,7 @@ public class WeatherDbHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         this.createLocationTable(sqLiteDatabase);
-        this.createWatherTable(sqLiteDatabase);
+        this.createWeatherTable(sqLiteDatabase);
     }
 
     @Override
@@ -56,7 +56,7 @@ public class WeatherDbHelper extends SQLiteOpenHelper {
         sqLiteDatabase.execSQL(SQL_CREATE_LOCATION_TABLE);
     }
 
-    private void createWatherTable(SQLiteDatabase sqLiteDatabase){
+    private void createWeatherTable(SQLiteDatabase sqLiteDatabase){
         final String SQL_CREATE_WEATHER_TABLE = "CREATE TABLE "
                 + WeatherContract.WeatherEntry.TABLE_NAME
                 + "( "

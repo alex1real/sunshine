@@ -35,6 +35,22 @@ import java.util.List;
  * API Guide</a> for more information on developing a Settings UI.
  */
 public class SettingsActivity extends AppCompatPreferenceActivity {
+
+    /******************
+     * Public Methods *
+     *****************/
+    /**************
+     * Overriders *
+     *************/
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    @Override
+    public Intent getParentActivityIntent(){
+        return super.getParentActivityIntent().addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+    }
+
+    /*******************
+     * Private Methods *
+     ******************/
     /**
      * A preference value change listener that updates the preference's summary
      * to reflect its new value.

@@ -19,10 +19,11 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
     /*************
      * Constants *
      ************/
+    public static final String DETAIL_FRAGMENT_TAG = "DFTAG";
+
     private final String LOG_TAG = MainActivity.class.getSimpleName();
     private final String LOCATION_BASE_URI = "geo:0,0";
     private final String QUERY_LOCATION_PARAM = "q";
-    private static final String DETAIL_FRAGMENT_TAG = "DFTAG";
 
     /*************
      * Variables *
@@ -107,7 +108,6 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
                     .findFragmentByTag(DETAIL_FRAGMENT_TAG);
 
             if(df != null){
-                //ToDo: Implement DetaiActivityFragment.onLocationChanged()
                 df.onLocationChanged(location);
             }
 

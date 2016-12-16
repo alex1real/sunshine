@@ -57,7 +57,7 @@ public class DetailActivity extends AppCompatActivity {
             fragment.setArguments(args);
 
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.weather_detail_container, fragment)
+                    .replace(R.id.weather_detail_container, fragment, MainActivity.DETAIL_FRAGMENT_TAG)
                     .commit();
         }
     }

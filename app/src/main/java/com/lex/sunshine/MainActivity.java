@@ -22,10 +22,12 @@ public class MainActivity extends AppCompatActivity {
     private final String LOG_TAG = MainActivity.class.getSimpleName();
     private final String LOCATION_BASE_URI = "geo:0,0";
     private final String QUERY_LOCATION_PARAM = "q";
+    private static final String DETAIL_FRAGMENT_TAG = "DFTAG";
 
     /*************
      * Variables *
      ************/
+    private boolean isTwoPane;
     private String location;
 
 
@@ -37,6 +39,21 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         this.location = Utility.getPreferredLocation(this);
+
+        // Check if the load activity_main contains a place holder for the detail fragment.
+        if(findViewById(R.id.weather_detail_container) != null){
+            isTwoPane = true;
+
+            //In two-pane mode, show the detail view in this activity
+            if(savedInstanceState == null){
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.weather_detail_container, new DetailActivityFragment())
+                        .commit();
+            }
+        }
+        else{
+            isTwoPane = false;
+        }
     }
 
     @Override

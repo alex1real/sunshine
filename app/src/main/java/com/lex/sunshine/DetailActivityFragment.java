@@ -135,7 +135,7 @@ public class DetailActivityFragment extends Fragment
 
         Intent intent = getActivity().getIntent();
 
-        if(intent != null){
+        if(intent != null && intent.getData() != null){
             return new CursorLoader(getActivity(),
                     intent.getData(),
                     FORECAST_PROJECTION,

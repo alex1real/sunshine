@@ -13,7 +13,8 @@
         android:id="@+id/listview_forecast"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="left|top" />
+        android:layout_gravity="left|top"
+        style="@style/ForecastListStyle"/>
 
 
 </FrameLayout>

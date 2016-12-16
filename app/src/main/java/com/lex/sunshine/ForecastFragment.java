@@ -134,13 +134,10 @@ public class ForecastFragment
                 if(cursor != null){
                     String locationSetting = Utility.getPreferredLocation(getActivity());
 
-                    Intent intent = new Intent(getActivity(), DetailActivity.class).setData(
-                            WeatherContract.WeatherEntry.buildWeatherLocationWithDate(
+                    ((Callback) getActivity())
+                            .onItemSelected(WeatherContract.WeatherEntry.buildWeatherLocationWithDate(
                                     locationSetting, cursor.getLong(COL_WEATHER_DATE)
-                            )
-                    );
-
-                    startActivity(intent);
+                            ));
                 }
             }
         });
@@ -148,9 +145,6 @@ public class ForecastFragment
         return rootView;
     }
 
-    /************************************************
-     * Overriders for LoaderManager.LoaderCallbacks *
-     ***********************************************/
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args){
         String locationSetting = Utility.getPreferredLocation(getActivity());
@@ -196,4 +190,19 @@ public class ForecastFragment
 
         fetchWeatherTask.execute(location, unit);
     }
+
+    /**************
+     * Interfaces *
+     *************/
+    /*
+     * A callback interface that all Activities containing this fragment must implement. This
+     * mechanism allows activities to be notified of item selections.
+     */
+    public interface Callback{
+        /*
+         * DetailFragmantCallback for when an item has been selected
+         */
+        public void onItemSelected(Uri dateUri);
+    }
+
 }

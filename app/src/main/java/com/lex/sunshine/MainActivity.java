@@ -14,7 +14,7 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ForecastFragment.Callback {
 
     /*************
      * Constants *
@@ -30,7 +30,12 @@ public class MainActivity extends AppCompatActivity {
     private boolean isTwoPane;
     private String location;
 
-
+    /**************
+     * Overriders *
+     *************/
+    /***********************************
+     * Overriders for AppComatActivity *
+     **********************************/
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,9 +100,44 @@ public class MainActivity extends AppCompatActivity {
         if(!this.location.equals(sysPrefLocation)){
             ForecastFragment ff = (ForecastFragment)getSupportFragmentManager().findFragmentById(R.id.fragmentMain);
 
-            ff.onLocationChanged();
+            if(ff != null)
+                ff.onLocationChanged();
+
+            DetailActivityFragment df = (DetailActivityFragment)getSupportFragmentManager()
+                    .findFragmentByTag(DETAIL_FRAGMENT_TAG);
+
+            if(df != null){
+                //ToDo: Implement DetaiActivityFragment.onLocationChanged()
+                df.onLocationChanged(location);
+            }
 
             this.location = sysPrefLocation;
+        }
+    }
+
+    /********************************************
+     * Overriders for ForecastFragment.Callback *
+     *******************************************/
+    @Override
+    public void onItemSelected(Uri contentUri){
+        if(isTwoPane){
+            // In Two Pane mode, show the detail view in this activity by adding or replacing the
+            // DetailFragment using a fragment transaction.
+            Bundle args = new Bundle();
+            args.putParcelable(DetailActivityFragment.DETAIL_URI, contentUri);
+
+            DetailActivityFragment fragment = new DetailActivityFragment();
+            fragment.setArguments(args);
+
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.weather_detail_container, fragment, DETAIL_FRAGMENT_TAG)
+                    .commit();
+        }
+        else{
+            Intent intent = new Intent(this, DetailActivity.class)
+                    .setData(contentUri);
+
+            startActivity(intent);
         }
     }
 

@@ -3,6 +3,7 @@ package com.lex.sunshine;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
@@ -31,9 +32,11 @@ public class DetailActivityFragment extends Fragment
     /*************
      * Constants *
      ************/
+    public static final String DETAIL_URI = "URI";
+
     private static final String LOG_TAG = DetailActivityFragment.class.getSimpleName();
     private static final String FORECAST_SHARE_HASHTAG = " #SunshineApp";
-    private static final int FORECAST_LOADER_ID = 0;
+    private static final int DETAIL_LOADER_ID = 0;
 
     private static final String[] FORECAST_PROJECTION = {
             WeatherContract.WeatherEntry.TABLE_NAME + "."
@@ -73,6 +76,7 @@ public class DetailActivityFragment extends Fragment
      * Variables *
      ************/
     private ShareActionProvider shareActionProvider;
+    private Uri uri;
 
 
     /******************
@@ -87,7 +91,7 @@ public class DetailActivityFragment extends Fragment
      **************************/
     @Override
     public void onActivityCreated(Bundle savedInstance){
-        getLoaderManager().initLoader(FORECAST_LOADER_ID, null, this);
+        getLoaderManager().initLoader(DETAIL_LOADER_ID, null, this);
 
         super.onActivityCreated(savedInstance);
     }
@@ -121,6 +125,10 @@ public class DetailActivityFragment extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Bundle arguments = getArguments();
+        if(arguments != null)
+            this.uri = arguments.getParcelable(DetailActivityFragment.DETAIL_URI);
+
         View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
 
         return rootView;
@@ -135,9 +143,9 @@ public class DetailActivityFragment extends Fragment
 
         Intent intent = getActivity().getIntent();
 
-        if(intent != null && intent.getData() != null){
+        if(this.uri != null){
             return new CursorLoader(getActivity(),
-                    intent.getData(),
+                    this.uri,
                     FORECAST_PROJECTION,
                     null, null, null);
         }
@@ -201,6 +209,15 @@ public class DetailActivityFragment extends Fragment
 
     }
 
+    public void onLocationChanged(String newLocation){
+        if(this.uri != null){
+            long date = WeatherContract.WeatherEntry.getDateFromUri(this.uri);
+            Uri updatedUri = WeatherContract.WeatherEntry.buildWeatherLocationWithDate(newLocation, date);
+            this.uri = updatedUri;
+
+            getLoaderManager().restartLoader(DETAIL_LOADER_ID, null, this);
+        }
+    }
 
     /*******************
      * Private Methods *

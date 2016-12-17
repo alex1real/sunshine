@@ -28,8 +28,7 @@ public class ForecastFragment
         extends Fragment
         implements LoaderManager.LoaderCallbacks<Cursor>{
 
-    private final String LOG_TAG = ForecastFragment.class.getSimpleName();
-    private final int FORECAST_LOADER_ID = 100;
+    private static final String SELECTED_KEY = "selected_position";
 
     private static final String[] FORECAST_PROJECTION = {
             WeatherContract.WeatherEntry.TABLE_NAME + "."
@@ -62,8 +61,16 @@ public class ForecastFragment
     protected static final int COL_LOCATION_LAT = 7;
     protected static final int COL_LOCATION_LONG = 8;
 
-    private ForecastAdapter forecastAdapter;
+    private final int FORECAST_LOADER_ID = 100;
+    private final String LOG_TAG = ForecastFragment.class.getSimpleName();
+
+    /*************
+     * Variables *
+     ************/
     private String defaultLocation;
+    private ForecastAdapter forecastAdapter;
+    private ListView listViewForecast;
+    private int position;
 
     /****************
      * Constructors *
@@ -116,15 +123,17 @@ public class ForecastFragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        // The ForecastAdapter will take data from a source and use it to populate the ListView
+        // it's attached to
         forecastAdapter = new ForecastAdapter(getActivity(), null, 0);
 
         View rootView = inflater.inflate(R.layout.fragment_forecast, container, false);
 
-        ListView listViewForecast = (ListView)rootView.findViewById(R.id.listview_forecast);
+        this.listViewForecast = (ListView)rootView.findViewById(R.id.listview_forecast);
 
-        listViewForecast.setAdapter(forecastAdapter);
+        this.listViewForecast.setAdapter(forecastAdapter);
 
-        listViewForecast.setOnItemClickListener(new AdapterView.OnItemClickListener(){
+        this.listViewForecast.setOnItemClickListener(new AdapterView.OnItemClickListener(){
 
             @Override
             public void onItemClick(AdapterView adapterView, View view, int position, long l){
@@ -139,8 +148,15 @@ public class ForecastFragment
                                     locationSetting, cursor.getLong(COL_WEATHER_DATE)
                             ));
                 }
+
+                ForecastFragment.this.position = position;
             }
         });
+
+        if(savedInstanceState != null
+                && savedInstanceState.containsKey(ForecastFragment.SELECTED_KEY)){
+            this.position = savedInstanceState.getInt(ForecastFragment.SELECTED_KEY);
+        }
 
         return rootView;
     }
@@ -164,11 +180,27 @@ public class ForecastFragment
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor){
         this.forecastAdapter.swapCursor(cursor);
+
+        if(this.position != ListView.INVALID_POSITION){
+            listViewForecast.smoothScrollToPosition(this.position);
+        }
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader){
         this.forecastAdapter.swapCursor(null);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle bundle){
+        // When tablet rotates, the currently selected list item needs to be saved.
+        // When no item is selected, this.position will be set to ListView.INVALID_POSITION,
+        // so check that before storing.
+        if(this.position != ListView.INVALID_POSITION){
+            bundle.putInt(ForecastFragment.SELECTED_KEY, this.position);
+        }
+
+        super.onSaveInstanceState(bundle);
     }
 
     public void onLocationChanged(){

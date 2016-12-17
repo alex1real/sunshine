@@ -16,6 +16,9 @@ import java.util.GregorianCalendar;
 
 public class Utility {
 
+    public static final int COLOR_COLORFUL = 0;
+    public static final int COLOR_BLACK_AND_WHITE = 1;
+
     public static String formatDate(long dateInMillis){
         Date date = new Date(dateInMillis);
 
@@ -145,83 +148,106 @@ public class Utility {
                 .equals(context.getString(R.string.pref_temperature_unit_metric));
     }
 
-    public static int selectBlackWhiteIcon(int weatherId){
+    public static int selectIcon(int weatherId, int color){
         // Based on weather code data found at:
         // http://bugs.openweathermap.org/projects/api/wiki/Weather_Condition_Codes
         if(weatherId == WeatherConditionMap.WEATHER_CLEAR_ID){
-            return R.drawable.ic_clear;
+            switch(color){
+                case(Utility.COLOR_BLACK_AND_WHITE):
+                    return R.drawable.ic_clear;
+                case(Utility.COLOR_COLORFUL):
+                    return R.drawable.art_clear;
+                default:
+                    return R.drawable.ic_clear;
+            }
         }
         else if(weatherId >= WeatherConditionMap.WEATHER_CLOUDS_MIN
                 && weatherId <= WeatherConditionMap.WEATHER_CLOUDS_MAX){
-            return R.drawable.ic_cloudy;
+            switch(color){
+                case(Utility.COLOR_BLACK_AND_WHITE):
+                    return R.drawable.ic_cloudy;
+                case(Utility.COLOR_COLORFUL):
+                    return R.drawable.art_clouds;
+                default:
+                    return R.drawable.ic_cloudy;
+            }
         }
         else if(weatherId >= WeatherConditionMap.WEATHER_FOG_MIN
                 && weatherId <= WeatherConditionMap.WEATHER_FOG_MAX){
-            return R.drawable.ic_fog;
+            switch(color){
+                case(Utility.COLOR_BLACK_AND_WHITE):
+                    return R.drawable.ic_fog;
+                case(Utility.COLOR_COLORFUL):
+                    return R.drawable.art_fog;
+                default:
+                    return R.drawable.ic_fog;
+            }
         }
         else if(weatherId == WeatherConditionMap.WEATHER_LIGHT_CLOUDS_ID){
-            return R.drawable.ic_light_clouds;
+            switch(color){
+                case(Utility.COLOR_BLACK_AND_WHITE):
+                    return R.drawable.ic_light_clouds;
+                case(Utility.COLOR_COLORFUL):
+                    return R.drawable.art_light_clouds;
+                default:
+                    return R.drawable.ic_light_clouds;
+            }
         }
         else if(weatherId >= WeatherConditionMap.WEATHER_LIGHT_RAIN_MIN
                 && weatherId <= WeatherConditionMap.WEATHER_LIGHT_RAIN_MAX){
-            return R.drawable.ic_light_rain;
+            switch(color){
+                case(Utility.COLOR_BLACK_AND_WHITE):
+                    return R.drawable.ic_light_rain;
+                case(Utility.COLOR_COLORFUL):
+                    return R.drawable.art_light_rain;
+                default:
+                    return R.drawable.ic_light_rain;
+            }
         }
         else if(weatherId >= WeatherConditionMap.WEATHER_RAIN_MIN
                 && weatherId <= WeatherConditionMap.WEATHER_RAIN_MAX){
-            return R.drawable.ic_rain;
+            switch(color){
+                case(Utility.COLOR_BLACK_AND_WHITE):
+                    return R.drawable.ic_rain;
+                case(Utility.COLOR_COLORFUL):
+                    return R.drawable.art_rain;
+                default:
+                    return R.drawable.ic_rain;
+            }
         }
         else if(weatherId >= WeatherConditionMap.WEATHER_SNOW_MIN
                 && weatherId <= WeatherConditionMap.WEATHER_SNOW_MAX){
-            return R.drawable.ic_snow;
+            switch(color){
+                case(Utility.COLOR_BLACK_AND_WHITE):
+                    return R.drawable.art_snow;
+                case(Utility.COLOR_COLORFUL):
+                    return R.drawable.ic_snow;
+                default:
+                    return R.drawable.ic_snow;
+            }
         }
         else if((weatherId >= WeatherConditionMap.WEATHER_STORM_MIN
                 && weatherId <= WeatherConditionMap.WEATHER_STORM_MAX)
                 || (weatherId >= WeatherConditionMap.WEATHER_STORM2_MIN
                 && weatherId <= WeatherConditionMap.WEATHER_STORM2_MAX)){
-            return R.drawable.ic_storm;
+            switch(color){
+                case(Utility.COLOR_BLACK_AND_WHITE):
+                    return R.drawable.ic_storm;
+                case(Utility.COLOR_COLORFUL):
+                    return R.drawable.art_storm;
+                default:
+                    return R.drawable.ic_storm;
+            }
         }
         else{
-            return R.drawable.ic_clear;
-        }
-    }
-
-    public static int selectColorfulIcon(int weatherId){
-        // Based on weather code data found at:
-        // http://bugs.openweathermap.org/projects/api/wiki/Weather_Condition_Codes
-        if(weatherId == WeatherConditionMap.WEATHER_CLEAR_ID){
-            return R.drawable.art_clear;
-        }
-        else if(weatherId >= WeatherConditionMap.WEATHER_CLOUDS_MIN
-                && weatherId <= WeatherConditionMap.WEATHER_CLOUDS_MAX){
-            return R.drawable.art_clouds;
-        }
-        else if(weatherId >= WeatherConditionMap.WEATHER_FOG_MIN
-                && weatherId <= WeatherConditionMap.WEATHER_FOG_MAX){
-            return R.drawable.art_fog;
-        }
-        else if(weatherId == WeatherConditionMap.WEATHER_LIGHT_CLOUDS_ID){
-            return R.drawable.art_light_clouds;
-        }
-        else if(weatherId >= WeatherConditionMap.WEATHER_LIGHT_RAIN_MIN
-                && weatherId <= WeatherConditionMap.WEATHER_LIGHT_RAIN_MAX){
-            return R.drawable.art_light_rain;
-        }
-        else if(weatherId >= WeatherConditionMap.WEATHER_RAIN_MIN
-                && weatherId <= WeatherConditionMap.WEATHER_RAIN_MAX){
-            return R.drawable.art_rain;
-        }
-        else if(weatherId >= WeatherConditionMap.WEATHER_SNOW_MIN
-                && weatherId <= WeatherConditionMap.WEATHER_SNOW_MAX){
-            return R.drawable.art_snow;
-        }
-        else if((weatherId >= WeatherConditionMap.WEATHER_STORM_MIN
-                && weatherId <= WeatherConditionMap.WEATHER_STORM_MAX)
-                || (weatherId >= WeatherConditionMap.WEATHER_STORM2_MIN
-                && weatherId <= WeatherConditionMap.WEATHER_STORM2_MAX)){
-            return R.drawable.art_storm;
-        }
-        else{
-            return R.drawable.art_clear;
+            switch(color){
+                case(Utility.COLOR_BLACK_AND_WHITE):
+                    return R.drawable.ic_clear;
+                case(Utility.COLOR_COLORFUL):
+                    return R.drawable.art_clear;
+                default:
+                    return R.drawable.ic_clear;
+            }
         }
     }
 

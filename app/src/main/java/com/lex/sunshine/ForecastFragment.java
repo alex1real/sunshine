@@ -71,6 +71,7 @@ public class ForecastFragment
     private ForecastAdapter forecastAdapter;
     private ListView listViewForecast;
     private int position;
+    private boolean useTodayLayout = true;
 
     /****************
      * Constructors *
@@ -158,6 +159,8 @@ public class ForecastFragment
             this.position = savedInstanceState.getInt(ForecastFragment.SELECTED_KEY);
         }
 
+        this.forecastAdapter.setUseTodayLayout(this.useTodayLayout);
+
         return rootView;
     }
 
@@ -207,6 +210,14 @@ public class ForecastFragment
         this.getWeatherForecast();
 
         getLoaderManager().restartLoader(FORECAST_LOADER_ID, null, this);
+    }
+
+    public void setUseTodayLayout(boolean useTodayLayout){
+        this.useTodayLayout = useTodayLayout;
+
+        if(forecastAdapter != null){
+            forecastAdapter.setUseTodayLayout(useTodayLayout);
+        }
     }
 
     /*******************

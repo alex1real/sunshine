@@ -28,6 +28,7 @@ public class ForecastAdapter extends CursorAdapter {
      * Variables *
      ************/
     private Context context;
+    private boolean useTodayLayout = true;
 
     /****************
      * Constructors *
@@ -72,7 +73,7 @@ public class ForecastAdapter extends CursorAdapter {
 
     @Override
     public int getItemViewType(int position){
-        return (position == 0) ? VIEW_TYPE_TODAY : VIEW_TYPE_FUTURE_DAY;
+        return (position == 0 && this.useTodayLayout) ? VIEW_TYPE_TODAY : VIEW_TYPE_FUTURE_DAY;
     }
 
     @Override
@@ -99,6 +100,10 @@ public class ForecastAdapter extends CursorAdapter {
         return view;
     }
 
+    public void setUseTodayLayout(boolean useTodayLayout){
+        this.useTodayLayout = useTodayLayout;
+    }
+
     /*******************
      * Private Methods *
      ******************/
@@ -109,10 +114,10 @@ public class ForecastAdapter extends CursorAdapter {
         int viewType = this.getItemViewType(cursorPosition);
 
         if(viewType == this.VIEW_TYPE_TODAY){
-            return Utility.selectColorfulIcon(weatherId);
+            return Utility.selectIcon(weatherId, Utility.COLOR_COLORFUL);
         }
         else{
-            return Utility.selectBlackWhiteIcon(weatherId);
+            return Utility.selectIcon(weatherId, Utility.COLOR_BLACK_AND_WHITE);
         }
     }
     /*

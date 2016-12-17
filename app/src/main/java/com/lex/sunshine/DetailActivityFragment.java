@@ -177,7 +177,7 @@ public class DetailActivityFragment extends Fragment
         minTempView.setText(Utility.formatTemperature(context, minTemp, isMetric));
 
         int weatherId = cursor.getInt(DetailActivityFragment.COL_WEATHER_CONDITION_ID);
-        int iconId = Utility.selectColorfulIcon(weatherId);
+        int iconId = Utility.selectIcon(weatherId, Utility.COLOR_COLORFUL);
         ImageView iconView = (ImageView)view.findViewById(R.id.detail_icon);
         iconView.setImageResource(iconId);
 

@@ -12,6 +12,7 @@
     <string name="format_pressure">Pressure: <xliff:g id="pressure">%1.0f</xliff:g> kpa</string>
     <string name="format_temperature"><xliff:g id="temp">%1.0f</xliff:g>\u00B0</string>
     <string name="format_wind_kmh">Wind: <xliff:g id="speed">%1.0f</xliff:g> km/h <xliff:g id="direction">%s</xliff:g></string>
+    <string name="format_week_day">EEEE</string>
 
     <!-- Menu -->
     <string name="action_settings">Settings</string>

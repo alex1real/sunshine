@@ -44,20 +44,23 @@
 
     <LinearLayout
         android:orientation="vertical"
+        android:layout_gravity="center"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="5">
 
         <TextView
             android:id="@+id/list_item_high_textview"
-            android:layout_width="match_parent"
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif-condensed"
             android:textAppearance="?android:textAppearanceLarge"/>
 
         <TextView
             android:id="@+id/list_item_low_textview"
-            android:layout_width="match_parent"
+            android:layout_gravity="center"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:fontFamily="sans-serif-condensed"
             android:textAppearance="?android:textAppearanceSmall"/>

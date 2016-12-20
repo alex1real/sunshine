@@ -50,14 +50,16 @@ public class ForecastAdapter extends CursorAdapter {
 
         ViewHolder viewHolder = (ViewHolder)view.getTag();
 
+        int cursorPosition = cursor.getPosition();
+        int viewType = this.getItemViewType(cursorPosition);
+
         // Read weather icon from cursor
         int weatherId = cursor.getInt(ForecastFragment.COL_WEATHER_CONDITION_ID);
-        int cursorPosition = cursor.getPosition();
-        int iconId = this.selectIcon(weatherId, cursorPosition);
+        int iconId = this.selectIcon(weatherId, viewType);
         viewHolder.iconView.setImageResource(iconId);
 
         long dateInMillis = cursor.getLong(ForecastFragment.COL_WEATHER_DATE);
-        viewHolder.dateView.setText(Utility.getFriendlyDayString(context, dateInMillis));
+        viewHolder.dateView.setText(this.getFormattedDate(context, dateInMillis, viewType));
 
         String weatherDesc = cursor.getString(ForecastFragment.COL_WEATHER_DESC);
         viewHolder.descriptionView.setText(weatherDesc);
@@ -110,14 +112,14 @@ public class ForecastAdapter extends CursorAdapter {
     /*
      * Based on the cursor weather.weather_id column, select the Icon to be displayed
      */
-    public int selectIcon(int weatherId, int cursorPosition){
-        int viewType = this.getItemViewType(cursorPosition);
-
-        if(viewType == this.VIEW_TYPE_TODAY){
-            return Utility.selectIcon(weatherId, Utility.COLOR_COLORFUL);
-        }
-        else{
-            return Utility.selectIcon(weatherId, Utility.COLOR_BLACK_AND_WHITE);
+    public int selectIcon(int weatherId, int viewType){
+        switch(viewType){
+            case VIEW_TYPE_TODAY:
+                return Utility.selectIcon(weatherId, Utility.COLOR_COLORFUL);
+            case VIEW_TYPE_FUTURE_DAY:
+                return Utility.selectIcon(weatherId, Utility.COLOR_BLACK_AND_WHITE);
+            default:
+                return Utility.selectIcon(weatherId, Utility.COLOR_BLACK_AND_WHITE);
         }
     }
     /*
@@ -130,5 +132,16 @@ public class ForecastAdapter extends CursorAdapter {
                 + "/" + Utility.formatTemperature(context, low, isMetric);
 
         return highLowStr;
+    }
+
+    private String getFormattedDate(Context context, long dateInMillis, int viewType){
+        switch(viewType){
+            case VIEW_TYPE_TODAY:
+                return Utility.getFullDate(context, dateInMillis);
+            case VIEW_TYPE_FUTURE_DAY:
+                return Utility.getFriendlyDayString(context, dateInMillis);
+            default:
+                return Utility.getFriendlyDayString(context, dateInMillis);
+        }
     }
 }

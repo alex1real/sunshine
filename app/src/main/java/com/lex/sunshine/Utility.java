@@ -99,6 +99,19 @@ public class Utility {
         return formattedDate;
     }
 
+    public static String getFullDate(Context context, long dateInMillis){
+        String formattedDate;
+
+        SimpleDateFormat sdf = new SimpleDateFormat("MMM d");
+
+        Calendar date = new GregorianCalendar();
+        date.setTimeInMillis(dateInMillis);
+
+        formattedDate = getWeekDay(dateInMillis) + ", " + sdf.format(date.getTime());
+
+        return formattedDate;
+    }
+
     public static String getPreferredLocation(Context context){
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
 

@@ -186,6 +186,9 @@ public class ForecastFragment
 
         if(this.position != ListView.INVALID_POSITION){
             listViewForecast.smoothScrollToPosition(this.position);
+
+            // Select the first item from the list
+            listViewForecast.setItemChecked(0, true);
         }
     }
 

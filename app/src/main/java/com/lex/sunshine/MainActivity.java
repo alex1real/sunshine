@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -14,6 +15,8 @@ import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import com.lex.sunshine.db.WeatherContract;
 
 public class MainActivity extends AppCompatActivity implements ForecastFragment.Callback {
 
@@ -53,9 +56,10 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
 
             //In two-pane mode, show the detail view in this activity
             if(savedInstanceState == null){
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.weather_detail_container, new DetailActivityFragment())
-                        .commit();
+                // Generate Uri for the current day and location
+                Uri uri = WeatherContract.WeatherEntry.buildWeatherLocationWithDate(location, System.currentTimeMillis());
+
+                this.replaceDetailFragment(uri);
             }
         }
         else{
@@ -128,15 +132,7 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
         if(isTwoPane){
             // In Two Pane mode, show the detail view in this activity by adding or replacing the
             // DetailFragment using a fragment transaction.
-            Bundle args = new Bundle();
-            args.putParcelable(DetailActivityFragment.DETAIL_URI, contentUri);
-
-            DetailActivityFragment fragment = new DetailActivityFragment();
-            fragment.setArguments(args);
-
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.weather_detail_container, fragment, DETAIL_FRAGMENT_TAG)
-                    .commit();
+            this.replaceDetailFragment(contentUri);
         }
         else{
             Intent intent = new Intent(this, DetailActivity.class)
@@ -149,6 +145,19 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
     /***********
      * Private *
      **********/
+    // It replaces the DetailFragment using a fragment transaction.
+    private void replaceDetailFragment(Uri contentUri){
+        Bundle args = new Bundle();
+        args.putParcelable(DetailActivityFragment.DETAIL_URI, contentUri);
+
+        DetailActivityFragment detailFragment = new DetailActivityFragment();
+        detailFragment.setArguments(args);
+
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.weather_detail_container, detailFragment, DETAIL_FRAGMENT_TAG)
+                .commit();
+    }
+
     private void viewLocationOnExternalMap(){
         //Retrieving location from Preferences
         String defaultLocation = getString(R.string.pref_default_location);

@@ -20,6 +20,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.lex.sunshine.db.WeatherContract;
+import com.lex.sunshine.service.SunshineService;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -227,14 +228,11 @@ public class ForecastFragment
      * Private methods *
      ******************/
     private void getWeatherForecast(){
-        FetchWeatherTask fetchWeatherTask = new FetchWeatherTask(getContext());
+        String location = Utility.getPreferredLocation(getActivity());
 
-        //Retrieving the location from a SharedPreference
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getActivity());
-        String location = sharedPref.getString(getString(R.string.pref_location_key), defaultLocation);
-        String unit = sharedPref.getString(getString(R.string.pref_temperature_unit_key), "");
-
-        fetchWeatherTask.execute(location, unit);
+        Intent intent = new Intent(getActivity(), SunshineService.class);
+        intent.putExtra(SunshineService.LOCATION_QUERY_EXTRA, location);
+        getActivity().startService(intent);
     }
 
     /**************

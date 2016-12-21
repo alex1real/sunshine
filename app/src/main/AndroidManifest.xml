@@ -41,6 +41,7 @@
         <provider
             android:authorities="com.lex.sunshine.app"
             android:name="com.lex.sunshine.WeatherProvider"/>
+        <service android:name=".service.SunshineService"/>
     </application>
 
 </manifest>

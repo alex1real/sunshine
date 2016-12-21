@@ -1,10 +1,16 @@
 package com.lex.sunshine;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.preference.PreferenceManager;
+import android.provider.Settings;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
@@ -228,11 +234,26 @@ public class ForecastFragment
      * Private methods *
      ******************/
     private void getWeatherForecast(){
-        String location = Utility.getPreferredLocation(getActivity());
+        //String location = Utility.getPreferredLocation(getActivity());
 
-        Intent intent = new Intent(getActivity(), SunshineService.class);
-        intent.putExtra(SunshineService.LOCATION_QUERY_EXTRA, location);
-        getActivity().startService(intent);
+        //Intent intent = new Intent(getActivity(), SunshineService.class);
+        //intent.putExtra(SunshineService.LOCATION_QUERY_EXTRA, location);
+        //getActivity().startService(intent);
+
+        Intent alarmIntent = new Intent(getActivity(), SunshineService.AlarmReceiver.class);
+        alarmIntent.putExtra(SunshineService.LOCATION_QUERY_EXTRA,
+                Utility.getPreferredLocation(getActivity()));
+
+        // Wrap in a pending intent which only fires once
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(getActivity(),
+                0,
+                alarmIntent,
+                PendingIntent.FLAG_ONE_SHOT);
+
+        AlarmManager am = (AlarmManager)getActivity().getSystemService(Context.ALARM_SERVICE);
+
+        // Set the alarm manager to wake up the system
+        am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 5000, pendingIntent);
     }
 
     /**************

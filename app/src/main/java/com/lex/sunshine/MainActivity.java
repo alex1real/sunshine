@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
      * Overriders *
      *************/
     /***********************************
-     * Overriders for AppComatActivity *
+     * Overriders for AppCompatActivity *
      **********************************/
     @Override
     protected void onCreate(Bundle savedInstanceState) {

@@ -53,16 +53,17 @@ public class ForecastAdapter extends CursorAdapter {
         int cursorPosition = cursor.getPosition();
         int viewType = this.getItemViewType(cursorPosition);
 
-        // Read weather icon from cursor
-        int weatherId = cursor.getInt(ForecastFragment.COL_WEATHER_CONDITION_ID);
-        int iconId = this.selectIcon(weatherId, viewType);
-        viewHolder.iconView.setImageResource(iconId);
-
         long dateInMillis = cursor.getLong(ForecastFragment.COL_WEATHER_DATE);
         viewHolder.dateView.setText(this.getFormattedDate(context, dateInMillis, viewType));
 
         String weatherDesc = cursor.getString(ForecastFragment.COL_WEATHER_DESC);
         viewHolder.descriptionView.setText(weatherDesc);
+
+        // Read weather icon from cursor
+        int weatherId = cursor.getInt(ForecastFragment.COL_WEATHER_CONDITION_ID);
+        int iconId = this.selectIcon(weatherId, viewType);
+        viewHolder.iconView.setImageResource(iconId);
+        viewHolder.iconView.setContentDescription(weatherDesc);
 
         boolean isMetric = Utility.isMetric(context);
 

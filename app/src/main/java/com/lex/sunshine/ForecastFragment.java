@@ -27,6 +27,7 @@ import android.widget.ListView;
 
 import com.lex.sunshine.db.WeatherContract;
 import com.lex.sunshine.service.SunshineService;
+import com.lex.sunshine.sync.SunshineSyncAdapter;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -234,26 +235,8 @@ public class ForecastFragment
      * Private methods *
      ******************/
     private void getWeatherForecast(){
-        //String location = Utility.getPreferredLocation(getActivity());
 
-        //Intent intent = new Intent(getActivity(), SunshineService.class);
-        //intent.putExtra(SunshineService.LOCATION_QUERY_EXTRA, location);
-        //getActivity().startService(intent);
-
-        Intent alarmIntent = new Intent(getActivity(), SunshineService.AlarmReceiver.class);
-        alarmIntent.putExtra(SunshineService.LOCATION_QUERY_EXTRA,
-                Utility.getPreferredLocation(getActivity()));
-
-        // Wrap in a pending intent which only fires once
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(getActivity(),
-                0,
-                alarmIntent,
-                PendingIntent.FLAG_ONE_SHOT);
-
-        AlarmManager am = (AlarmManager)getActivity().getSystemService(Context.ALARM_SERVICE);
-
-        // Set the alarm manager to wake up the system
-        am.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 5000, pendingIntent);
+        SunshineSyncAdapter.syncImmediately(getActivity());
     }
 
     /**************

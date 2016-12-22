@@ -44,4 +44,8 @@
     </string-array>
     <string name="pref_temperature_unit_metric">metric</string>
     <string name="pref_temperature_unit_imperial">imperial</string>
+
+    <!-- SyncAdapter related -->
+    <string name="sync_account_type">sunshine.lex.com</string>
+    <string name="content_authority">com.lex.sunshine.app</string>
 </resources>

@@ -24,4 +24,11 @@
         android:positiveButtonText="@null"
         android:title="@string/pref_temperature_unit_label" />
 
+    <CheckBoxPreference
+        android:title="@string/pref_enable_notification_label"
+        android:key="@string/pref_enable_notification_key"
+        android:summaryOff="@string/pref_enable_notification_false"
+        android:summaryOn="@string/pref_enable_notification_true"
+        android:defaultValue="@string/pref_enable_notification_defalut"/>
+
 </PreferenceScreen>

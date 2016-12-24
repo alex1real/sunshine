@@ -165,16 +165,15 @@ public class DetailActivityFragment extends Fragment
         TextView dateView = (TextView)view.findViewById(R.id.detail_date_textview);
         dateView.setText(Utility.getShortDate(dateInMillis));
 
-        boolean isMetric = Utility.isMetric(getContext());
         Context context = getContext();
 
         double maxTemp = cursor.getDouble(DetailActivityFragment.COL_WEATHER_MAX_TEMP);
         TextView maxTempView = (TextView)view.findViewById(R.id.detail_high_textview);
-        maxTempView.setText(Utility.formatTemperature(context, maxTemp, isMetric));
+        maxTempView.setText(Utility.formatTemperature(context, maxTemp));
 
         double minTemp = cursor.getDouble(DetailActivityFragment.COL_WEATHER_MIN_TEMP);
         TextView minTempView = (TextView) view.findViewById(R.id.detail_low_textview);
-        minTempView.setText(Utility.formatTemperature(context, minTemp, isMetric));
+        minTempView.setText(Utility.formatTemperature(context, minTemp));
 
         int weatherId = cursor.getInt(DetailActivityFragment.COL_WEATHER_CONDITION_ID);
         int iconId = Utility.selectIcon(weatherId, Utility.COLOR_COLORFUL);
@@ -237,10 +236,8 @@ public class DetailActivityFragment extends Fragment
      * Prepare the weather high/lows for presentation
      */
     private String formatHighLows(double high, double low, Context context){
-        boolean isMetric = Utility.isMetric(context);
-
-        String highLowStr = Utility.formatTemperature(context, high, isMetric)
-                + "/" + Utility.formatTemperature(context, low, isMetric);
+        String highLowStr = Utility.formatTemperature(context, high)
+                + "/" + Utility.formatTemperature(context, low);
 
         return highLowStr;
     }

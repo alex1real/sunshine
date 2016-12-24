@@ -33,10 +33,10 @@ public class Utility {
         return String.format(context.getString(R.string.format_pressure), pressure);
     }
 
-    public static String formatTemperature(Context context, double temperature, boolean isMetric){
+    public static String formatTemperature(Context context, double temperature){
         double temp;
 
-        if(!isMetric){
+        if(!Utility.isMetric(context)){
             temp = 9 * temperature / 5 + 32;
         }
         else{

@@ -20,6 +20,12 @@
     <string name="action_view_location">View location on map</string>
     <string name="action_share">Share</string>
 
+    <!-- Notification Format -->
+    <string name="format_notification">Forecast: <xliff:g id="condition">%1$s</xliff:g> High: <xliff id="high">%2$s</xliff> Low: <xliff:g id="low">%3$s</xliff:g></string>
+
+    <!-- Strings related to Notification Settings -->
+    <string name="pref_last_notification">last_notification</string>
+
     <!-- Strings related to Settings -->
     <string name="pref_header_general">General</string>
 

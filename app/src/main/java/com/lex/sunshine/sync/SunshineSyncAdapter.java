@@ -452,14 +452,26 @@ public class SunshineSyncAdapter extends AbstractThreadedSyncAdapter {
                 gc.add(Calendar.DAY_OF_WEEK, 1);
             }
 
+            int numAffectedRows;
+
             // Add to database
             if(contentValuesArray.length > 0){
-                int numAffectedRows = getContext().getContentResolver().bulkInsert(
+                getContext().getContentResolver().bulkInsert(
                         WeatherContract.WeatherEntry.CONTENT_URI,
                         contentValuesArray);
 
                 notifyWeather();
             }
+
+            // Delete old data to avoid builind an endless history
+            Calendar yesterday = new GregorianCalendar();
+            yesterday.add(Calendar.DAY_OF_YEAR, -1);
+
+            getContext().getContentResolver().delete(
+                    WeatherContract.WeatherEntry.CONTENT_URI,
+                    WeatherContract.WeatherEntry.COLUMN_DATE + " <= ?",
+                    new String[]{Long.toString(yesterday.getTimeInMillis())}
+            );
 
         }
         catch(JSONException e){

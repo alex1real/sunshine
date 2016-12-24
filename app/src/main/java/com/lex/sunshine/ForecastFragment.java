@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -119,11 +120,16 @@ public class ForecastFragment
     @Override
     public boolean onOptionsItemSelected(MenuItem menuItem){
         int itemId = menuItem.getItemId();
+        
+        switch(itemId){
+            case R.id.action_refresh:
+                this.getWeatherForecast();
 
-        if(itemId == R.id.action_refresh){
-            this.getWeatherForecast();
+                return true;
+            case R.id.action_view_location:
+                this.openPreferredLocationOnMap();
 
-            return true;
+                return true;
         }
 
         return super.onOptionsItemSelected(menuItem);
@@ -237,6 +243,33 @@ public class ForecastFragment
     private void getWeatherForecast(){
 
         SunshineSyncAdapter.syncImmediately(getActivity());
+    }
+
+    private void openPreferredLocationOnMap(){
+        // Using the URI scheme for showing a location found on map.
+        // This intent is detailed in the "Common Intents" page of Android's developer site:
+        // http://developer.android.com/guide/components/intents-common.html#Maps
+        if(forecastAdapter != null){
+            Cursor cursor = forecastAdapter.getCursor();
+
+            if(cursor != null){
+                cursor.moveToFirst();
+                String posLat = cursor.getString(COL_LOCATION_LAT);
+                String posLong = cursor.getString(COL_LOCATION_LONG);
+                Uri geoLocationUri = Uri.parse("geo:" + posLat + "," + posLong);
+
+                Intent intent = new Intent(Intent.ACTION_VIEW);
+                intent.setData(geoLocationUri);
+
+                if(intent.resolveActivity(getActivity().getPackageManager()) != null){
+                    startActivity(intent);
+                }
+                else{
+                    Log.d(LOG_TAG, "Couldn't call " + geoLocationUri.toString()
+                            + ", no receiving apps installed.");
+                }
+            }
+        }
     }
 
     /**************

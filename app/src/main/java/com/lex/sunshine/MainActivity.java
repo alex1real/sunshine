@@ -96,11 +96,6 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
 
             return true;
         }
-        else if(id == R.id.action_view_location){
-            this.viewLocationOnExternalMap();
-
-            return true;
-        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -161,29 +156,4 @@ public class MainActivity extends AppCompatActivity implements ForecastFragment.
                 .replace(R.id.weather_detail_container, detailFragment, DETAIL_FRAGMENT_TAG)
                 .commit();
     }
-
-    private void viewLocationOnExternalMap(){
-        //Retrieving location from Preferences
-        String defaultLocation = getString(R.string.pref_default_location);
-
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        String location = sharedPref.getString(getString(R.string.pref_location_key), defaultLocation);
-
-        //Building uri getActivity request
-        Uri uri = Uri.parse(this.LOCATION_BASE_URI);
-        Uri.Builder uriBuilder = uri.buildUpon();
-        uriBuilder.appendQueryParameter(this.QUERY_LOCATION_PARAM, location);
-        uri = uriBuilder.build();
-
-        Log.v(this.LOG_TAG, "Intent Map URI: " + uri.toString());
-
-        //Creating Intent
-        Intent mapIntent = new Intent(Intent.ACTION_VIEW);
-        mapIntent.setData(uri);
-
-        if(mapIntent.resolveActivity(getPackageManager()) != null){
-            startActivity(mapIntent);
-        }
-    }
-
 }

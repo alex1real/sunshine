@@ -1,16 +1,8 @@
 package com.lex.sunshine;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
-import android.content.BroadcastReceiver;
-import android.content.ContentResolver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
-import android.preference.PreferenceManager;
-import android.provider.Settings;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
@@ -27,7 +19,6 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.lex.sunshine.db.WeatherContract;
-import com.lex.sunshine.service.SunshineService;
 import com.lex.sunshine.sync.SunshineSyncAdapter;
 
 /**
@@ -92,7 +83,7 @@ public class ForecastFragment
      * Public Methods *
      *****************/
     /***************************
-     * Overriders dor Fragment *
+     * Overriders for Fragment *
      **************************/
     @Override
     public void onActivityCreated(Bundle savedInstanceState){

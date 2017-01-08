@@ -17,8 +17,7 @@
         <ImageView
             android:id="@+id/list_item_icon"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:srcCompat="@mipmap/ic_launcher" />
+            android:layout_height="wrap_content" />
     </FrameLayout>
 
     <LinearLayout
